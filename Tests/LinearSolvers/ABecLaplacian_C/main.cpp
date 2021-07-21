@@ -9,7 +9,14 @@ int main (int argc, char* argv[])
     {
         BL_PROFILE("main");
         MyTest mytest;
-        mytest.solve();
+
+        for(int i=0; i<100; ++i) {
+            mytest.solve();
+            for (int ilev = 0; ilev <= mytest.max_level; ++ilev)
+            {
+                mytest.solution[ilev].setVal(0.0);
+            }
+        }
         mytest.writePlotfile();
     }
 

@@ -1,8 +1,8 @@
 
-max_level = 1
+max_level = 0
 ref_ratio = 2
-n_cell = 128
-max_grid_size = 64
+n_cell = 4096
+max_grid_size = 512
 
 composite_solve = 1   # composite solve or level by level?
 

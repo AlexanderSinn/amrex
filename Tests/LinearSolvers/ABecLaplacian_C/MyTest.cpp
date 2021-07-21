@@ -35,7 +35,7 @@ MyTest::solvePoisson ()
     info.setConsolidation(consolidation);
     info.setMaxCoarseningLevel(max_coarsening_level);
 
-    const Real tol_rel = 1.e-10;
+    const Real tol_rel = 1.e-8;
     const Real tol_abs = 0.0;
 
     const int nlevels = geom.size();
@@ -133,7 +133,7 @@ MyTest::solveABecLaplacian ()
     info.setMaxCoarseningLevel(max_coarsening_level);
     info.setMaxSemicoarseningLevel(max_semicoarsening_level);
 
-    const Real tol_rel = 1.e-10;
+    const Real tol_rel = 1.e-8;
     const Real tol_abs = 0.0;
 
     const int nlevels = geom.size();
@@ -275,7 +275,7 @@ MyTest::solveABecLaplacianInhomNeumann ()
     info.setConsolidation(consolidation);
     info.setMaxCoarseningLevel(max_coarsening_level);
 
-    const Real tol_rel = 1.e-10;
+    const Real tol_rel = 1.e-8; // 1.e-10
     const Real tol_abs = 0.0;
 
     const int nlevels = geom.size();

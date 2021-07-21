@@ -28,8 +28,9 @@ private:
     void solvePoisson ();
     void solveABecLaplacian ();
     void solveABecLaplacianInhomNeumann ();
-
+public:
     int max_level = 1;
+private:
     int ref_ratio = 2;
     int n_cell = 128;
     int max_grid_size = 64;
@@ -61,7 +62,9 @@ private:
     amrex::Vector<amrex::BoxArray> grids;
     amrex::Vector<amrex::DistributionMapping> dmap;
 
+public:
     amrex::Vector<amrex::MultiFab> solution;
+private:
     amrex::Vector<amrex::MultiFab> rhs;
     amrex::Vector<amrex::MultiFab> exact_solution;
     amrex::Vector<amrex::MultiFab> acoef;

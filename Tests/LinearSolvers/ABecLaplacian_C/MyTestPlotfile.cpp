@@ -37,9 +37,9 @@ MyTest::writePlotfile () const
             }
         }
 
-        WriteMultiLevelPlotfile("plot", nlevels, amrex::GetVecOfConstPtrs(plotmf),
-                                varname, geom, 0.0, Vector<int>(nlevels, 0),
-                                Vector<IntVect>(nlevels, IntVect{ref_ratio}));
+        //WriteMultiLevelPlotfile("plot", nlevels, amrex::GetVecOfConstPtrs(plotmf),
+        //                        varname, geom, 0.0, Vector<int>(nlevels, 0),
+        //                        Vector<IntVect>(nlevels, IntVect{ref_ratio}));
     } else {
         const int ncomp = (acoef.empty()) ? 4 : 6;
         Vector<std::string> varname = {"solution", "rhs", "exact_solution", "error"};
@@ -67,9 +67,8 @@ MyTest::writePlotfile () const
                            << " 1-norm error: " << plotmf[ilev].norm1(3)*dvol << std::endl;
         }
 
-        WriteMultiLevelPlotfile("plot", nlevels, amrex::GetVecOfConstPtrs(plotmf),
-                                varname, geom, 0.0, Vector<int>(nlevels, 0),
-                                Vector<IntVect>(nlevels, IntVect{ref_ratio}));
+        //WriteMultiLevelPlotfile("plot", nlevels, amrex::GetVecOfConstPtrs(plotmf),
+        //                        varname, geom, 0.0, Vector<int>(nlevels, 0),
+        //                        Vector<IntVect>(nlevels, IntVect{ref_ratio}));
     }
 }
-
