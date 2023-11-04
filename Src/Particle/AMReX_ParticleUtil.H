@@ -617,11 +617,13 @@ void PermutationForDeposition (Gpu::DeviceVector<index_type>& perm, index_type n
     nbins = (nbins + gpu_block_size_m1) / gpu_block_size * gpu_block_size;
 
     Gpu::DeviceVector<index_type> llist_start(nbins, llist_guard);
+    //Gpu::DeviceVector<index_type> llist_num(nbins, 0u);
     Gpu::DeviceVector<index_type> llist_next(nitems);
     perm.resize(nitems);
     Gpu::DeviceScalar<index_type> global_idx(0);
 
     index_type* pllist_start = llist_start.dataPtr();
+    //index_type* pllist_num = llist_num.dataPtr();
     index_type* pllist_next = llist_next.dataPtr();
     index_type* pperm = perm.dataPtr();
     index_type* pglobal_idx = global_idx.dataPtr();
@@ -629,16 +631,263 @@ void PermutationForDeposition (Gpu::DeviceVector<index_type>& perm, index_type n
     amrex::ParallelFor(nitems, [=] AMREX_GPU_DEVICE (index_type i) noexcept
     {
         i = nitems - i - 1;
-        pllist_next[i] = Gpu::Atomic::Exch(pllist_start + f(i), i);
+        auto offset = f(i);
+        pllist_next[i] = Gpu::Atomic::Exch(pllist_start + offset, i);
+        //Gpu::Atomic::Add(pllist_num + offset, 1u);
     });
 
 #if defined(AMREX_USE_CUDA) || defined(AMREX_USE_HIP)
+
+    {
+        Gpu::Device::streamSynchronize();
+        BL_PROFILE("PermutationForDeposition_Transpose()");
+
     amrex::launch<gpu_block_size>(nbins / gpu_block_size, Gpu::gpuStream(),
         [=] AMREX_GPU_DEVICE () {
             __shared__ index_type sdata[gpu_block_size];
+            __shared__ index_type global_offset[2];
+            __shared__ int stop_loop[2];
+            constexpr index_type num_sub_cycle = 8;
             index_type current_idx = pllist_start[threadIdx.x + gpu_block_size * blockIdx.x];
 
             while (true) {
+                sdata[threadIdx.x] = index_type(current_idx != llist_guard);
+                index_type x = 0;
+                if (threadIdx.x == gpu_block_size_m1) {
+                    stop_loop[0] = 0;
+                    stop_loop[1] = 0;
+                }
+
+                // simple block wide prefix sum
+                for (index_type i = 1; i<gpu_block_size; i*=2) {
+                    __syncthreads();
+                    if (threadIdx.x >= i) {
+                        x = sdata[threadIdx.x - i];
+                    }
+                    __syncthreads();
+                    if (threadIdx.x >= i) {
+                        sdata[threadIdx.x] += x;
+                    }
+                }
+                __syncthreads();
+                index_type num_cells_with_particles = sdata[gpu_block_size_m1];
+                if (num_cells_with_particles == 0) {
+                    break;
+                }
+
+                //if (num_cells_with_particles == 1) {
+                //    while (current_idx != llist_guard) {
+                //        pperm[Gpu::Atomic::Add(pglobal_idx, index_type(1))] = current_idx;
+                //        current_idx = pllist_next[current_idx];
+                //    }
+                //    break;
+                //}
+
+                index_type next_idx = 0;
+                int s = 0;
+
+                while (true) {
+                    if (threadIdx.x == gpu_block_size_m1) {
+                        global_offset[s] = Gpu::Atomic::Add(pglobal_idx, num_cells_with_particles);
+                    }
+                    if (current_idx != llist_guard) {
+                        next_idx = pllist_next[current_idx];
+                        if (next_idx == llist_guard) {
+                            Gpu::Atomic::CAS(&stop_loop[s], 0, 1);
+                        }
+                    }
+                    __syncthreads();
+                    if (current_idx != llist_guard) {
+                        pperm[sdata[threadIdx.x] + global_offset[s] - 1] = current_idx;
+                        current_idx = next_idx;
+                    }
+                    if (stop_loop[s] == 1) {
+                        break;
+                    }
+                    s = 1-s;
+                }
+                __syncthreads();
+
+
+                /*while (true) {
+
+                    index_type next_idx[num_sub_cycle+1];
+                    next_idx[0] = current_idx;
+
+                    if (current_idx != llist_guard) {
+                        for (int c=1; c<=num_sub_cycle; ++c) {
+                            next_idx[c] = pllist_next[next_idx[c-1]];
+                            if (next_idx[c] == llist_guard) {
+                                atomicMin(&stop_loop, c);
+                                break;
+                            }
+                        }
+                    }
+                    __syncthreads();
+                    if (threadIdx.x == gpu_block_size_m1) {
+                        global_offset = Gpu::Atomic::Add(pglobal_idx, std::min(stop_loop, num_sub_cycle)*num_cells_with_particles);
+                    }
+                    __syncthreads();
+
+                    if (current_idx != llist_guard) {
+                        for (int c=1; c<=num_sub_cycle; ++c) {
+                            if (c<=stop_loop) {
+                                pperm[sdata[threadIdx.x] + global_offset + (c-1)*num_cells_with_particles - 1] = current_idx;
+                                current_idx = next_idx[c];
+                            }
+                        }
+                    }
+                    __syncthreads();
+                    if (stop_loop != num_sub_cycle + 1) {
+                        break;
+                    }*/
+
+
+                    /*index_type next_idx = 0;
+                    if (current_idx != llist_guard) {
+                        next_idx = pllist_next[current_idx];
+
+                        if (next_idx == llist_guard) {
+                            atomicExch(&stop_loop, 1);
+                        }
+                    }
+                    __syncthreads();
+                    if (threadIdx.x == gpu_block_size_m1) {
+                        if (stop_loop == 0) {
+                            global_offset = Gpu::Atomic::Add(pglobal_idx, 2*sdata[gpu_block_size_m1]);
+                        } else {
+                            global_offset = Gpu::Atomic::Add(pglobal_idx, sdata[gpu_block_size_m1]);
+                        }
+                    }
+
+                    if (stop_loop == 0) {
+                        __syncthreads();
+                        if (current_idx != llist_guard) {
+                            pperm[sdata[threadIdx.x] + global_offset - 1] = current_idx;
+                            current_idx = next_idx;
+                            if (current_idx != llist_guard) {
+                                pperm[sdata[threadIdx.x] + global_offset + sdata[gpu_block_size_m1] - 1] = current_idx;
+                                current_idx = pllist_next[current_idx];
+                                if (current_idx == llist_guard) {
+                                    atomicExch(&stop_loop, 1);
+                                }
+                            }
+                        }
+                        __syncthreads();
+                        if (stop_loop == 1) {
+                            break;
+                        }
+                    } else {
+                        __syncthreads();
+                        if (current_idx != llist_guard) {
+                            pperm[sdata[threadIdx.x] + global_offset - 1] = current_idx;
+                            current_idx = next_idx;
+                        }
+                        break;
+                    }*/
+
+                    /*if (threadIdx.x == 0) {
+                        stop_loop = 0;
+                        global_offset = Gpu::Atomic::Add(pglobal_idx, sdata[gpu_block_size_m1]);
+                    }
+                    __syncthreads();
+                    if (current_idx != llist_guard) {
+                        pperm[sdata[threadIdx.x] + global_offset - 1] = current_idx;
+                        current_idx = pllist_next[current_idx];
+
+                        if (current_idx == llist_guard) {
+                            atomicExch(&stop_loop, 1);
+                        }
+                    }
+                    __syncthreads();
+                    if (stop_loop) {
+                        break;
+                    }*/
+                //}
+            }
+
+
+            //index_type current_idx_cpy = current_idx;
+            //index_type n_elements = 0;
+            //while (current_idx_cpy != llist_guard) {
+            //    current_idx_cpy = pllist_next[current_idx_cpy];
+            //    ++n_elements;
+            //}
+            /*index_type n_elements = pllist_num[threadIdx.x + gpu_block_size * blockIdx.x];
+
+
+            while (true) {
+
+                if (threadIdx.x == 0) {
+                    sdata[0] = llist_guard;
+                }
+
+                __syncthreads();
+
+                Gpu::Atomic::Min(&sdata[0], n_elements <= 0 ? llist_guard : n_elements);
+
+                __syncthreads();
+
+                auto num_elements_red = sdata[0];
+                if (num_elements_red == llist_guard) {
+                    break;
+                }
+
+                __syncthreads();
+
+                sdata[threadIdx.x] = index_type(current_idx != llist_guard);
+                index_type x = 0;
+
+                // simple block wide prefix sum
+                for (index_type i = 1; i<gpu_block_size; i*=2) {
+                    __syncthreads();
+                    if (threadIdx.x >= i) {
+                        x = sdata[threadIdx.x - i];
+                    }
+                    __syncthreads();
+                    if (threadIdx.x >= i) {
+                        sdata[threadIdx.x] += x;
+                    }
+                }
+                __syncthreads();
+                x = sdata[gpu_block_size_m1];
+                __syncthreads();
+                if (threadIdx.x == gpu_block_size_m1) {
+                    sdata[gpu_block_size_m1] = Gpu::Atomic::Add(pglobal_idx, x * num_elements_red);
+                }
+                __syncthreads();
+                if (threadIdx.x < gpu_block_size_m1) {
+                    sdata[threadIdx.x] += sdata[gpu_block_size_m1];
+                }
+                __syncthreads();
+                if (threadIdx.x == gpu_block_size_m1) {
+                    sdata[gpu_block_size_m1] += x;
+                }
+                __syncthreads();
+                index_type y = sdata[threadIdx.x] - 1;
+
+                if (current_idx != llist_guard) {
+                    for (int e=0; e<num_elements_red; ++e) {
+                        pperm[y] = current_idx;
+                        current_idx = pllist_next[current_idx];
+                        y += x;
+                    }
+                    n_elements -= num_elements_red;
+                }
+
+                //for (int e=0; e<num_elements_red; ++e) {
+                //    if (current_idx != llist_guard) {
+                //        pperm[y - 1] = current_idx;
+                //        current_idx = pllist_next[current_idx];
+                //        y += x;
+                //        --n_elements;
+                //    }
+                //}
+                __syncthreads();
+            }*/
+
+
+            /*while (true) {
                 sdata[threadIdx.x] = index_type(current_idx != llist_guard);
                 index_type x = 0;
 
@@ -676,8 +925,11 @@ void PermutationForDeposition (Gpu::DeviceVector<index_type>& perm, index_type n
                     pperm[sdata[threadIdx.x] - 1] = current_idx;
                     current_idx = pllist_next[current_idx];
                 }
-            }
+            }*/
         });
+
+        Gpu::Device::streamSynchronize();
+    }
 #else
     Abort("Not implemented");
 #endif
