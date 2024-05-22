@@ -1216,7 +1216,7 @@ template <typename ParticleType, int NArrayReal, int NArrayInt,
           template<class> class Allocator, class CellAssignor>
 void
 ParticleContainer_impl<ParticleType, NArrayReal, NArrayInt, Allocator, CellAssignor>
-::SortParticlesForDeposition (IntVect idx_type)
+::SortParticlesForDeposition (IntVect idx_type, bool use_new)
 {
     BL_PROFILE("ParticleContainer::SortParticlesForDeposition()");
 
@@ -1233,7 +1233,11 @@ ParticleContainer_impl<ParticleType, NArrayReal, NArrayInt, Allocator, CellAssig
 
             using index_type = typename decltype(m_bins)::index_type;
             Gpu::DeviceVector<index_type> perm;
-            PermutationForDeposition<index_type>(perm, np, ptile, box, geom, idx_type);
+            if (use_new) {
+                PermutationForDeposition<index_type>(perm, np, ptile, box, geom, idx_type);
+            } else {
+                PermutationForDepositionOld<index_type>(perm, np, ptile, box, geom, idx_type);
+            }
             ReorderParticles(lev, mfi, perm.dataPtr());
         }
     }

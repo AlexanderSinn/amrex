@@ -532,7 +532,7 @@ public:
      * \param idx_type
      *
      */
-    void SortParticlesForDeposition (IntVect idx_type);
+    void SortParticlesForDeposition (IntVect idx_type, bool use_new=true);
 
     /**
      * \brief Sort the particles on each tile by cell, using Fortran ordering.
