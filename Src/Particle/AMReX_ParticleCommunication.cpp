@@ -368,6 +368,46 @@ void ParticleCopyPlan::doHandShakeGlobal (const Vector<Long>& Snds, Vector<Long>
 #endif
 }
 
+void ParticleCopyPlan::doHandShakeWindow (const Vector<Long>& Snds, Vector<Long>& Rcvs)
+{
+#ifdef AMREX_USE_MPI
+    const int NProcs = ParallelContext::NProcsSub();
+    const int MyProc = ParallelContext::MyProcSub();
+
+    Long* window_buffer = nullptr;
+    MPI_Win window;
+
+    MPI_Win_allocate(NProcs*sizeof(Long), sizeof(Long),
+                     MPI_INFO_NULL, ParallelContext::CommunicatorSub(),
+                     &window_buffer, &window);
+
+    for (int i=0; i<NProcs; ++i) {
+        window_buffer[i] = 0;
+    }
+
+    MPI_Win_fence(0, window);
+
+    for (int i=0; i<NProcs; ++i) {
+        if (Snds[i] > 0) {
+            MPI_Put(&Snds[i], 1, ParallelDescriptor::Mpi_typemap<Long>::type(),
+                    i, MyProc, 1, ParallelDescriptor::Mpi_typemap<Long>::type(),
+                    window);
+        }
+    }
+
+    MPI_Win_fence(0, window);
+
+    for (int i=0; i<NProcs; ++i) {
+        Rcvs[i] = window_buffer[i];
+    }
+
+    MPI_Win_free(&window);
+
+#else
+    amrex::ignore_unused(Snds,Rcvs);
+#endif
+}
+
 void amrex::communicateParticlesFinish (const ParticleCopyPlan& plan)
 {
     BL_PROFILE("amrex::communicateParticlesFinish");

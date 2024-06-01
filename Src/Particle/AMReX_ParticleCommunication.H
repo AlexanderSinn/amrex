@@ -264,6 +264,11 @@ private:
     //
     static void doHandShakeAllToAll (const Vector<Long>& Snds, Vector<Long>& Rcvs);
 
+    //
+    // Another version of the above that is implemented using MPI single sided communication
+    //
+    static void doHandShakeWindow (const Vector<Long>& Snds, Vector<Long>& Rcvs);
+
     bool m_local;
 };
 
