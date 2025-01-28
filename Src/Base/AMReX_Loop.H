@@ -262,21 +262,24 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void LoopConcurrent_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> const hi, IntVectND<dim> iv) noexcept
 {
     if constexpr (idim == 1) {
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect(f,iv);
         }
     } else if constexpr (idim == 2) {
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect(f,iv);
         }}
     } else if constexpr (idim == 3) {
         for (int i2 = lo[2], h2 = hi[2]; i2 <= h2; ++i2) { iv[2] = i2;
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect(f,iv);
         }}}
     } else {
@@ -306,21 +309,24 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void LoopConcurrent_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> const hi, IntVectND<dim> iv, int n) noexcept
 {
     if constexpr (idim == 1) {
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp(f,iv,n);
         }
     } else if constexpr (idim == 2) {
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp(f,iv,n);
         }}
     } else if constexpr (idim == 3) {
         for (int i2 = lo[2], h2 = hi[2]; i2 <= h2; ++i2) { iv[2] = i2;
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp(f,iv,n);
         }}}
     } else {
@@ -487,21 +493,24 @@ AMREX_FORCE_INLINE
 void LoopConcurrentOnCpu_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> const hi, IntVectND<dim> iv) noexcept
 {
     if constexpr (idim == 1) {
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_cpu(f,iv);
         }
     } else if constexpr (idim == 2) {
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_cpu(f,iv);
         }}
     } else if constexpr (idim == 3) {
         for (int i2 = lo[2], h2 = hi[2]; i2 <= h2; ++i2) { iv[2] = i2;
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_cpu(f,iv);
         }}}
     } else {
@@ -530,21 +539,24 @@ AMREX_FORCE_INLINE
 void LoopConcurrentOnCpu_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> const hi, IntVectND<dim> iv, int n) noexcept
 {
     if constexpr (idim == 1) {
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp_cpu(f,iv,n);
         }
     } else if constexpr (idim == 2) {
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp_cpu(f,iv,n);
         }}
     } else if constexpr (idim == 3) {
         for (int i2 = lo[2], h2 = hi[2]; i2 <= h2; ++i2) { iv[2] = i2;
         for (int i1 = lo[1], h1 = hi[1]; i1 <= h1; ++i1) { iv[1] = i1;
+        int h0 = hi[0];
         AMREX_PRAGMA_SIMD
-        for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
+        for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
             call_f_intvect_ncomp_cpu(f,iv,n);
         }}}
     } else {
