@@ -4,7 +4,7 @@ set -e # Exit with nonzero exit code if anything fails
 # Doxygen
 echo "Build the Doxygen documentation"
 cd Docs/Doxygen
-doxygen doxygen.conf &> doxygen.out
+doxygen doxygen.conf
 cd ../..
 
 # sphinx
