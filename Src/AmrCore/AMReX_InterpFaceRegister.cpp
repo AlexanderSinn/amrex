@@ -92,8 +92,15 @@ namespace {
         Array4<Real const> crse;
         Array4<int const> mask;
         Box domface;
+
         AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         Box box() const noexcept { return Box(mask); }
+
+        [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+        friend bool operator== (const IFRTag& lhs, const IFRTag& rhs) noexcept {
+            return lhs.fine == rhs.fine && lhs.slope == rhs.slope && lhs.crse == rhs.crse &&
+                lhs.mask == rhs.mask && lhs.domface == rhs.domface;
+        }
     };
 }
 #endif

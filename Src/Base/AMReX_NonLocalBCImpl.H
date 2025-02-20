@@ -249,6 +249,11 @@ struct Array4Array4Box {
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4Array4Box& lhs, const Array4Array4Box& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.sfab == rhs.sfab && lhs.dbox == rhs.dbox;
+    }
 };
 
 template <class FAB, class DTOS, class Proj>

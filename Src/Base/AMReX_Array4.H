@@ -294,6 +294,13 @@ namespace amrex {
         CellData<T> cellData (int i, int j, int k) const noexcept {
             return CellData<T>{this->ptr(i,j,k), nstride, ncomp};
         }
+
+        [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+        friend bool operator== (const Array4& lhs, const Array4& rhs) noexcept {
+            return lhs.p == rhs.p && lhs.jstride == rhs.jstride &&
+                lhs.kstride == rhs.kstride && lhs.nstride == rhs.nstride &&
+                lhs.begin == rhs.begin && lhs.end == rhs.end && lhs.ncomp == rhs.ncomp;
+        }
     };
 
     template <class Tto, class Tfrom>

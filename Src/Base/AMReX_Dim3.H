@@ -9,7 +9,13 @@
 
 namespace amrex {
 
-struct Dim3 { int x; int y; int z; };
+struct Dim3 { int x; int y; int z;
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Dim3& lhs, const Dim3& rhs) noexcept {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+};
 struct XDim3 { Real x; Real y; Real z; };
 
 template <typename T,

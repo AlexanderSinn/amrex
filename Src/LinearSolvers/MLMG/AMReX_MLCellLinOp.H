@@ -241,6 +241,15 @@ struct MLMGABCTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box() const noexcept { return bx; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const MLMGABCTag& lhs, const MLMGABCTag& rhs) noexcept {
+        return lhs.fab == rhs.fab && lhs.bcval_lo == rhs.bcval_lo && lhs.bcval_hi == rhs.bcval_hi &&
+               lhs.mask_lo == rhs.mask_lo && lhs.mask_hi == rhs.mask_hi && lhs.bcloc_lo == rhs.bcloc_lo &&
+               lhs.bcloc_hi == rhs.bcloc_hi && lhs.bx == rhs.bx && lhs.bctype_lo == rhs.bctype_lo &&
+               lhs.bctype_hi == rhs.bctype_hi && lhs.blen == rhs.blen && lhs.comp == rhs.comp &&
+               lhs.dir == rhs.dir;
+    }
 };
 
 template <typename T>
@@ -260,6 +269,14 @@ struct MLMGPSTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box() const noexcept { return bx; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const MLMGPSTag& lhs, const MLMGPSTag& rhs) noexcept {
+        return lhs.flo == rhs.flo && lhs.fhi == rhs.fhi && lhs.mlo == rhs.mlo &&
+               lhs.mhi == rhs.mhi && lhs.bcllo == rhs.bcllo && lhs.bclhi == rhs.bclhi &&
+               lhs.bx == rhs.bx && lhs.bctlo == rhs.bctlo && lhs.bcthi == rhs.bcthi &&
+               lhs.blen == rhs.blen && lhs.comp == rhs.comp && lhs.dir == rhs.dir;
+    }
 };
 
 #ifdef AMREX_USE_EB
@@ -281,6 +298,15 @@ struct MLMGPSEBTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box() const noexcept { return bx; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const MLMGPSEBTag& lhs, const MLMGPSEBTag& rhs) noexcept {
+        return lhs.flo == rhs.flo && lhs.fhi == rhs.fhi && lhs.mlo == rhs.mlo &&
+               lhs.mhi == rhs.mhi && lhs.bcllo == rhs.bcllo && lhs.bclhi == rhs.bclhi &&
+               lhs.bx == rhs.bx && lhs.bctlo == rhs.bctlo && lhs.bcthi == rhs.bcthi &&
+               lhs.blen == rhs.blen && lhs.comp == rhs.comp && lhs.dir == rhs.dir &&
+               lhs.ap == rhs.ap;
+    }
 };
 #endif
 

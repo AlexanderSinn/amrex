@@ -20,6 +20,12 @@ struct Array4PairTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4PairTag& lhs, const Array4PairTag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.sfab == rhs.sfab &&
+               lhs.dbox == rhs.dbox;
+    }
 };
 
 template <class T0, class T1=T0>
@@ -31,6 +37,12 @@ struct Array4CopyTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4CopyTag& lhs, const Array4CopyTag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.sfab == rhs.sfab &&
+               lhs.dbox == rhs.dbox && lhs.offset == rhs.offset;
+    }
 };
 
 template <class T0, class T1=T0>
@@ -43,6 +55,12 @@ struct Array4MaskCopyTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4MaskCopyTag& lhs, const Array4MaskCopyTag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.sfab == rhs.sfab && lhs.mask == rhs.mask &&
+               lhs.dbox == rhs.dbox && lhs.offset == rhs.offset;
+    }
 };
 
 template <class T>
@@ -51,6 +69,11 @@ struct Array4Tag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box box () const noexcept { return Box(dfab); }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4Tag& lhs, const Array4Tag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab;
+    }
 };
 
 template <class T>
@@ -60,6 +83,11 @@ struct Array4BoxTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4BoxTag& lhs, const Array4BoxTag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.dbox == rhs.dbox;
+    }
 };
 
 template <class T>
@@ -70,6 +98,11 @@ struct Array4BoxValTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box () const noexcept { return dbox; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4BoxValTag& lhs, const Array4BoxValTag& rhs) noexcept {
+        return lhs.dfab == rhs.dfab && lhs.dbox == rhs.dbox && lhs.val == rhs.val;
+    }
 };
 
 template <class T>
@@ -80,6 +113,11 @@ struct Array4BoxOrientationTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box() const noexcept { return bx; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4BoxOrientationTag& lhs, const Array4BoxOrientationTag& rhs) noexcept {
+        return lhs.fab == rhs.fab && lhs.bx == rhs.bx && lhs.face == rhs.face;
+    }
 };
 
 template <class T>
@@ -90,6 +128,11 @@ struct Array4BoxOffsetTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Box const& box() const noexcept { return bx; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const Array4BoxOffsetTag& lhs, const Array4BoxOffsetTag& rhs) noexcept {
+        return lhs.fab == rhs.fab && lhs.bx == rhs.bx && lhs.offset == rhs.offset;
+    }
 };
 
 template <class T>
@@ -99,6 +142,11 @@ struct VectorTag {
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     Long size () const noexcept { return m_size; }
+
+    [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    friend bool operator== (const VectorTag& lhs, const VectorTag& rhs) noexcept {
+        return lhs.p == rhs.p && lhs.m_size == rhs.m_size;
+    }
 };
 
 #ifdef AMREX_USE_GPU
@@ -172,34 +220,71 @@ ParallelFor_doit (Vector<TagType> const& tags, F && f)
     const int ntags = tags.size();
     if (ntags == 0) { return; }
 
-    Long l_ntotwarps = 0;
-    int ntotwarps = 0;
-    Vector<int> nwarps;
-    nwarps.reserve(ntags+1);
-    for (int i = 0; i < ntags; ++i)
+#pragma omp critical
     {
-        auto& tag = tags[i];
+
+    static Vector<TagType> static_tags {};
+    static char* h_buffer = nullptr;
+    static char* d_buffer = nullptr;
+    static TagType* d_tags =  nullptr;
+    static int* d_nwarps = nullptr;
+    static Long l_ntotwarps = 0;
+    static int ntotwarps = 0;
+
+    static Long nfail = 0;
+    static Long nsuccess = 0;
+
+    if (true /*tags != static_tags*/ ) {
+        ++nfail;
+
+        //static_tags = tags;
+
+        l_ntotwarps = 0;
+        ntotwarps = 0;
+        Vector<int> nwarps;
+        nwarps.reserve(ntags+1);
+        for (int i = 0; i < ntags; ++i)
+        {
+            auto& tag = tags[i];
+            nwarps.push_back(ntotwarps);
+            auto nw = (get_tag_size(tag) + Gpu::Device::warp_size-1) / Gpu::Device::warp_size;
+            l_ntotwarps += nw;
+            ntotwarps += static_cast<int>(nw);
+        }
         nwarps.push_back(ntotwarps);
-        auto nw = (get_tag_size(tag) + Gpu::Device::warp_size-1) / Gpu::Device::warp_size;
-        l_ntotwarps += nw;
-        ntotwarps += static_cast<int>(nw);
+
+        std::size_t sizeof_tags = ntags*sizeof(TagType);
+        std::size_t offset_nwarps = Arena::align(sizeof_tags);
+        std::size_t sizeof_nwarps = (ntags+1)*sizeof(int);
+        std::size_t total_buf_size = offset_nwarps + sizeof_nwarps;
+
+        if (h_buffer != nullptr) {
+            Gpu::streamSynchronize();
+            The_Pinned_Arena()->free(h_buffer);
+            The_Arena()->free(d_buffer);
+        }
+
+        h_buffer = (char*)The_Pinned_Arena()->alloc(total_buf_size);
+        d_buffer = (char*)The_Arena()->alloc(total_buf_size);
+
+        std::memcpy(h_buffer, tags.data(), sizeof_tags);
+        std::memcpy(h_buffer+offset_nwarps, nwarps.data(), sizeof_nwarps);
+        Gpu::htod_memcpy_async(d_buffer, h_buffer, total_buf_size);
+
+        d_tags = reinterpret_cast<TagType*>(d_buffer);
+        d_nwarps = reinterpret_cast<int*>(d_buffer+offset_nwarps);
+
+        Gpu::streamSynchronize();
+
+    } else {
+        ++nsuccess;
     }
-    nwarps.push_back(ntotwarps);
 
-    std::size_t sizeof_tags = ntags*sizeof(TagType);
-    std::size_t offset_nwarps = Arena::align(sizeof_tags);
-    std::size_t sizeof_nwarps = (ntags+1)*sizeof(int);
-    std::size_t total_buf_size = offset_nwarps + sizeof_nwarps;
+    std::cout << "tag cache success " << nsuccess << " fail " << nfail << std::endl;
 
-    char* h_buffer = (char*)The_Pinned_Arena()->alloc(total_buf_size);
-    char* d_buffer = (char*)The_Arena()->alloc(total_buf_size);
-
-    std::memcpy(h_buffer, tags.data(), sizeof_tags);
-    std::memcpy(h_buffer+offset_nwarps, nwarps.data(), sizeof_nwarps);
-    Gpu::htod_memcpy_async(d_buffer, h_buffer, total_buf_size);
-
-    auto d_tags = reinterpret_cast<TagType*>(d_buffer);
-    auto d_nwarps = reinterpret_cast<int*>(d_buffer+offset_nwarps);
+    auto d_tags2 = d_tags;
+    auto d_nwarps2 = d_nwarps;
+    auto ntotwarps2 = ntotwarps;
 
     constexpr int nthreads = 256;
     constexpr int nwarps_per_block = nthreads/Gpu::Device::warp_size;
@@ -223,11 +308,11 @@ ParallelFor_doit (Vector<TagType> const& tags, F && f)
         auto g_tid = std::size_t(blockDim.x)*blockIdx.x + threadIdx.x;
 #endif
         auto g_wid = int(g_tid / Gpu::Device::warp_size);
-        if (g_wid >= ntotwarps) { return; }
+        if (g_wid >= ntotwarps2) { return; }
 
-        int tag_id = amrex::bisect(d_nwarps, 0, ntags, g_wid);
+        int tag_id = amrex::bisect(d_nwarps2, 0, ntags, g_wid);
 
-        int b_wid = g_wid - d_nwarps[tag_id]; // b_wid'th warp on this box
+        int b_wid = g_wid - d_nwarps2[tag_id]; // b_wid'th warp on this box
 #ifdef AMREX_USE_SYCL
         int lane = item.get_local_id(0) % Gpu::Device::warp_size;
 #else
@@ -236,15 +321,15 @@ ParallelFor_doit (Vector<TagType> const& tags, F && f)
         int icell = b_wid*Gpu::Device::warp_size + lane;
 
 #ifdef AMREX_USE_SYCL
-        tagparfor_call_f(item, icell, d_tags[tag_id], f);
+        tagparfor_call_f(item, icell, d_tags2[tag_id], f);
 #else
-        tagparfor_call_f(      icell, d_tags[tag_id], f);
+        tagparfor_call_f(      icell, d_tags2[tag_id], f);
 #endif
     });
 
-    Gpu::streamSynchronize();
-    The_Pinned_Arena()->free(h_buffer);
-    The_Arena()->free(d_buffer);
+    }
+
+    //Gpu::streamSynchronize();
 }
 
 }
