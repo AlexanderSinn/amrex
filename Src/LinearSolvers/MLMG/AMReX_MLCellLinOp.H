@@ -1245,7 +1245,7 @@ MLCellLinOpT<MF>::smooth (int amrlev, int mglev, MF& sol, const MF& rhs,
                 const int ngrow = sol.nGrowVect().min();
                 std::cout << "ncomp " << ncomp << " ngrow " << ngrow << " cross " << cross << std::endl;
                 sol.FillBoundary(0, ncomp, IntVect(ngrow), this->m_geom[amrlev][mglev].periodicity(), cross);
-                ghost_cells_valid = ngrow;
+                ghost_cells_valid = 1;
                 //sol.nGrowVect().min();
             }
 

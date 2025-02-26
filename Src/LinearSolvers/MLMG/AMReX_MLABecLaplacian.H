@@ -1106,7 +1106,7 @@ MLABecLaplacianT<MF>::Fsmooth (int amrlev, int mglev, MF& sol, const MF& rhs, in
                 AMREX_ALWAYS_ASSERT(bycoef.nGrowVect().allGE(ngrow - IntVect(1)));
                 AMREX_ALWAYS_ASSERT(bzcoef.nGrowVect().allGE(ngrow - IntVect(1)));
 
-                ParallelFor(sol, ngrow - IntVect(0), nc,
+                ParallelFor(sol, ngrow - IntVect(1), nc,
                 [=] AMREX_GPU_DEVICE (int box_no, int i, int j, int k, int n) noexcept
                 {
 
