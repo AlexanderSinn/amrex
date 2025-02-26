@@ -1234,6 +1234,8 @@ MLCellLinOpT<MF>::smooth (int amrlev, int mglev, MF& sol, const MF& rhs,
 
     int ghost_cells_valid = skip_fillboundary ? 1 : 0;
 
+    // FB here
+
     for (int i = 0; i < niter; ++i) {
         for (int redblack = 0; redblack < 2; ++redblack)
         {
@@ -1241,7 +1243,7 @@ MLCellLinOpT<MF>::smooth (int amrlev, int mglev, MF& sol, const MF& rhs,
                 const int ncomp = this->getNComp();
                 const int cross = false; //isCrossStencil();
                 const int ngrow = sol.nGrowVect().min();
-                //std::cout << "ncomp " << ncomp << " ngrow " << ngrow << " cross " << cross << std::endl;
+                std::cout << "ncomp " << ncomp << " ngrow " << ngrow << " cross " << cross << std::endl;
                 sol.FillBoundary(0, ncomp, IntVect(ngrow), this->m_geom[amrlev][mglev].periodicity(), cross);
                 ghost_cells_valid = ngrow;
                 //sol.nGrowVect().min();
@@ -1337,6 +1339,57 @@ MLCellLinOpT<MF>::reflux (int crse_amrlev, MF& res, const MF& crse_sol, const MF
     MFItInfo mfi_info;
     if (Gpu::notInLaunchRegion()) { mfi_info.EnableTiling().SetDynamic(true); }
 
+    /*
+#ifdef AMREX_USE_GPU
+
+    Array<std::size_t,AMREX_SPACEDIM> mem_size {};
+
+    for (MFIter mfi(crse_sol, mfi_info);  mfi.isValid(); ++mfi) {
+        if (fluxreg.CrseHasWork(mfi)) {
+            const Box& tbx = mfi.tilebox();
+            AMREX_D_TERM(
+                mem_size[0] = std::max(mem_size[0], amrex::surroundingNodes(tbx,0).numPts());,
+                mem_size[1] = std::max(mem_size[1], amrex::surroundingNodes(tbx,1).numPts());,
+                mem_size[2] = std::max(mem_size[2], amrex::surroundingNodes(tbx,2).numPts());
+            );
+        }
+    }
+    for (MFIter mfi(fine_sol, mfi_info);  mfi.isValid(); ++mfi) {
+        if (fluxreg.FineHasWork(mfi)) {
+            const Box& tbx = mfi.tilebox();
+            AMREX_D_TERM(
+                mem_size[0] = std::max(mem_size[0], amrex::surroundingNodes(tbx,0).numPts());,
+                mem_size[1] = std::max(mem_size[1], amrex::surroundingNodes(tbx,1).numPts());,
+                mem_size[2] = std::max(mem_size[2], amrex::surroundingNodes(tbx,2).numPts());
+            );
+        }
+    }
+
+    Array<FAB,Gpu::DeviceVector<RT>> flux_mem {};
+    AMREX_D_DECL(
+        flux_mem[0].resize(mem_size[0]*ncomp);,
+        flux_mem[1].resize(mem_size[1]*ncomp);,
+        flux_mem[2].resize(mem_size[2]*ncomp);
+    );
+
+    for (MFIter mfi(crse_sol, mfi_info);  mfi.isValid(); ++mfi)
+    {
+        if (fluxreg.CrseHasWork(mfi))
+        {
+            const Box& tbx = mfi.tilebox();
+            AMREX_D_TERM(flux[0].resize(amrex::surroundingNodes(tbx,0),ncomp);,
+                        flux[1].resize(amrex::surroundingNodes(tbx,1),ncomp);,
+                        flux[2].resize(amrex::surroundingNodes(tbx,2),ncomp););
+            FFlux(crse_amrlev, mfi, pflux, crse_sol[mfi], Location::FaceCentroid);
+            fluxreg.CrseAdd(mfi, cpflux, crse_dx, dt, RunOn::Gpu);
+        }
+    }
+
+
+
+#else
+
+*/
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -1354,8 +1407,8 @@ MLCellLinOpT<MF>::reflux (int crse_amrlev, MF& res, const MF& crse_sol, const MF
                              flux[1].resize(amrex::surroundingNodes(tbx,1),ncomp);,
                              flux[2].resize(amrex::surroundingNodes(tbx,2),ncomp););
                 AMREX_D_TERM(Elixir elifx = flux[0].elixir();,
-                             Elixir elify = flux[1].elixir();,
-                             Elixir elifz = flux[2].elixir(););
+                             elifx.append(flux[1].elixir());,
+                             elifx.append(flux[2].elixir()););
                 FFlux(crse_amrlev, mfi, pflux, crse_sol[mfi], Location::FaceCentroid);
                 fluxreg.CrseAdd(mfi, cpflux, crse_dx, dt, RunOn::Gpu);
             }
@@ -1375,8 +1428,8 @@ MLCellLinOpT<MF>::reflux (int crse_amrlev, MF& res, const MF& crse_sol, const MF
                              flux[1].resize(amrex::surroundingNodes(tbx,1),ncomp);,
                              flux[2].resize(amrex::surroundingNodes(tbx,2),ncomp););
                 AMREX_D_TERM(Elixir elifx = flux[0].elixir();,
-                             Elixir elify = flux[1].elixir();,
-                             Elixir elifz = flux[2].elixir(););
+                             elifx.append(flux[1].elixir());,
+                             elifx.append(flux[2].elixir()););
                 FFlux(fine_amrlev, mfi, pflux, fine_sol[mfi], Location::FaceCentroid, face_only);
                 fluxreg.FineAdd(mfi, cpflux, fine_dx, dt, RunOn::Gpu);
             }

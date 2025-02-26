@@ -1085,7 +1085,7 @@ MLMGT<MF>::prepareForSolve (Vector<AMF*> const& a_sol, Vector<AMF const*> const&
     IntVect ng = linop.getNGrowVectRestriction();
     if (cf_strategy == CFStrategy::ghostnodes) { ng = ng_rhs; }
     if (!solve_called) {
-        linop.make(res, ng);
+        linop.make(res, IntVect(4));
         linop.make(rescor, ng);
     }
     for (int alev = 0; alev <= finest_amr_lev; ++alev)
@@ -1109,7 +1109,7 @@ MLMGT<MF>::prepareForSolve (Vector<AMF*> const& a_sol, Vector<AMF const*> const&
             if (!solve_called) {
                 IntVect _ng = ng;
                 if (cf_strategy == CFStrategy::ghostnodes) { _ng=IntVect(linop.getNGrow(alev,mglev)); }
-                cor[alev][mglev] = linop.make(alev, mglev, _ng);
+                cor[alev][mglev] = linop.make(alev, mglev, IntVect(4));
             }
             setVal(cor[alev][mglev], RT(0.0));
         }

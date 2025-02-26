@@ -291,16 +291,16 @@ MLABecLaplacianT<MF>::define_ab_coeffs ()
                 (this->m_grids[amrlev][mglev], this->m_dmap[amrlev][mglev],
                 1, 0, MFInfo(), *(this->m_factory[amrlev][mglev]));
 
-            const int pre_comp_nghost = 0;
+            const int pre_comp_nghost = 3;
             m_pre_comp[amrlev][mglev].define
                 (this->m_grids[amrlev][mglev], this->m_dmap[amrlev][mglev],
-                2, pre_comp_nghost, MFInfo(), *(this->m_factory[amrlev][mglev]));
+                    m_ncomp*2, pre_comp_nghost, MFInfo(), *(this->m_factory[amrlev][mglev]));
             for (int idim = 0; idim < AMREX_SPACEDIM; ++idim)
             {
                 const BoxArray& ba = amrex::convert(this->m_grids[amrlev][mglev],
                                                     IntVect::TheDimensionVector(idim));
                 m_b_coeffs[amrlev][mglev][idim].define
-                    (ba, this->m_dmap[amrlev][mglev], m_ncomp, 0, MFInfo(),
+                    (ba, this->m_dmap[amrlev][mglev], m_ncomp, pre_comp_nghost, MFInfo(),
                      *(this->m_factory[amrlev][mglev]));
             }
         }
@@ -1020,8 +1020,6 @@ MLABecLaplacianT<MF>::Fsmooth (int amrlev, int mglev, MF& sol, const MF& rhs, in
 #endif
 #endif
 
-    [[maybe_unused]] const auto& pre_comp = this->m_pre_comp[amrlev][mglev];
-
     const int nc = this->getNComp();
     const Real* h = this->m_geom[amrlev][mglev].CellSize();
     AMREX_D_TERM(const RT dhx = m_b_scalar/static_cast<RT>(h[0]*h[0]);,
@@ -1063,7 +1061,7 @@ MLABecLaplacianT<MF>::Fsmooth (int amrlev, int mglev, MF& sol, const MF& rhs, in
 #endif
 #endif
 
-        const auto& pcma = pre_comp.const_arrays();
+        const auto& pcma = this->m_pre_comp[amrlev][mglev].const_arrays();
 
         if (this->m_overset_mask[amrlev][mglev]) {
             const auto& osmma = this->m_overset_mask[amrlev][mglev]->const_arrays();
@@ -1100,15 +1098,27 @@ MLABecLaplacianT<MF>::Fsmooth (int amrlev, int mglev, MF& sol, const MF& rhs, in
             }
         } else if (regular_coarsening) {
             if (this->m_use_gauss_seidel) {
-                ParallelFor(sol, IntVect(0), nc,
+#if (AMREX_SPACEDIM == 3)
+                IntVect ngrow = sol.nGrowVect();
+                AMREX_ALWAYS_ASSERT(rhs.nGrowVect().allGE(ngrow - IntVect(1)));
+                AMREX_ALWAYS_ASSERT(this->m_pre_comp[amrlev][mglev].nGrowVect().allGE(ngrow - IntVect(1)));
+                AMREX_ALWAYS_ASSERT(bxcoef.nGrowVect().allGE(ngrow - IntVect(1)));
+                AMREX_ALWAYS_ASSERT(bycoef.nGrowVect().allGE(ngrow - IntVect(1)));
+                AMREX_ALWAYS_ASSERT(bzcoef.nGrowVect().allGE(ngrow - IntVect(1)));
+
+                ParallelFor(sol, ngrow - IntVect(0), nc,
                 [=] AMREX_GPU_DEVICE (int box_no, int i, int j, int k, int n) noexcept
                 {
-#if (AMREX_SPACEDIM == 3)
+
                     abec_gsrb_v2(i,j,k,n, solnma[box_no], rhsma[box_no], pcma[box_no],
                               AMREX_D_DECL(dhx, dhy, dhz),
                               AMREX_D_DECL(bxma[box_no],byma[box_no],bzma[box_no]),
                               redblack);
+                });
 #else
+                ParallelFor(sol, IntVect(0), nc,
+                [=] AMREX_GPU_DEVICE (int box_no, int i, int j, int k, int n) noexcept
+                {
                     Box vbx(ama[box_no]);
                     abec_gsrb(i,j,k,n, solnma[box_no], rhsma[box_no], alpha, ama[box_no],
                               AMREX_D_DECL(dhx, dhy, dhz),
@@ -1118,8 +1128,9 @@ MLABecLaplacianT<MF>::Fsmooth (int amrlev, int mglev, MF& sol, const MF& rhs, in
                               AMREX_D_DECL(f0ma[box_no],f2ma[box_no],f4ma[box_no]),
                               AMREX_D_DECL(f1ma[box_no],f3ma[box_no],f5ma[box_no]),
                               vbx, redblack);
-#endif
+
                 });
+#endif
             } else {
                 const auto& axma = Ax.const_arrays();
                 ParallelFor(sol, IntVect(0), nc,
