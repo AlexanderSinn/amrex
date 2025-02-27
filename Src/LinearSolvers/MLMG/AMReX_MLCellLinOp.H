@@ -711,6 +711,7 @@ MLCellLinOpT<MF>::applyBC (int amrlev, int mglev, MF& in, BCMode bc_mode, StateM
 
     int flagbc = bc_mode == BCMode::Inhomogeneous;
     const int imaxorder = this->maxorder;
+    std::cout << "flagbc " << flagbc << " imaxorder " << imaxorder << std::endl;
 
     const Real* dxinv = this->m_geom[amrlev][mglev].InvCellSize();
     const RT dxi = static_cast<RT>(dxinv[0]);
@@ -754,11 +755,16 @@ MLCellLinOpT<MF>::applyBC (int amrlev, int mglev, MF& in, BCMode bc_mode, StateM
                         const auto& bvhi = (bndry != nullptr) ?
                             bndry->bndryValues(ohi).const_array(mfi) : foo;
                         for (int icomp = 0; icomp < ncomp; ++icomp) {
+
+                            Box bx = amrex::adjCell(vbx,olo);
+
+                            std::cout << "applyBC " << bdcv[icomp][olo] << " " << bdcv[icomp][ohi] << std::endl;
+
                             tags.emplace_back(MLMGABCTag<RT>{iofab, bvlo, bvhi,
                                                     maskvals[olo].const_array(mfi),
                                                     maskvals[ohi].const_array(mfi),
                                                     bdlv[icomp][olo], bdlv[icomp][ohi],
-                                                    amrex::adjCell(vbx,olo),
+                                                    bx,
                                                     bdcv[icomp][olo], bdcv[icomp][ohi],
                                                     vbx.length(idim), icomp, idim});
                         }
@@ -1230,9 +1236,143 @@ MLCellLinOpT<MF>::smooth (int amrlev, int mglev, MF& sol, const MF& rhs,
 {
     BL_PROFILE("MLCellLinOp::smooth()");
 
+    //rhs.FillBoundary();
+
     m_reuse_bc_tag_vector = true;
 
     int ghost_cells_valid = skip_fillboundary ? 1 : 0;
+
+    MF boundary_vals{The_Async_Arena()};
+    iMultiFab boundary_type{The_Async_Arena()};
+
+    {
+        boundary_vals.define(sol.boxArray(), sol.DistributionMap(), 3, sol.nGrowVect());
+        boundary_type.define(sol.boxArray(), sol.DistributionMap(), 3, sol.nGrowVect());
+
+        boundary_vals.setVal(0);
+        boundary_type.setVal(0);
+
+        const int ncomp = this->getNComp();
+        int flagbc = bc_mode == BCMode::Inhomogeneous;
+        const int imaxorder = this->maxorder;
+
+        const Real* dxinv = this->m_geom[amrlev][mglev].InvCellSize();
+        const RT dxi = static_cast<RT>(dxinv[0]);
+        const RT dyi = (AMREX_SPACEDIM >= 2) ? static_cast<RT>(dxinv[1]) : RT(1.0);
+        const RT dzi = (AMREX_SPACEDIM == 3) ? static_cast<RT>(dxinv[2]) : RT(1.0);
+
+        const auto& maskvals = m_maskvals[amrlev][mglev];
+        const auto& bcondloc = *m_bcondloc[amrlev][mglev];
+
+        FAB foofab(Box::TheUnitBox(),ncomp);
+        const auto& foo = foofab.const_array();
+
+
+
+        Vector<MLMGABCTag<RT>> tags;
+        tags.reserve(in.local_size()*AMREX_SPACEDIM*ncomp);
+
+        for (MFIter mfi(in); mfi.isValid(); ++mfi) {
+            const Box& vbx = mfi.validbox();
+            const auto& iofab = in.array(mfi);
+            const auto & bdlv = bcondloc.bndryLocs(mfi);
+            const auto & bdcv = bcondloc.bndryConds(mfi);
+
+            const auto& bc_vals3d = boundary_vals.array(mfi);
+            const auto& bc_type3d = boundary_type.array(mfi);
+
+            for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                if (idim != hidden_direction) {
+                    const Orientation olo(idim,Orientation::low);
+                    const Orientation ohi(idim,Orientation::high);
+                    const auto& bvlo = (bndry != nullptr) ?
+                        bndry->bndryValues(olo).const_array(mfi) : foo;
+                    const auto& bvhi = (bndry != nullptr) ?
+                        bndry->bndryValues(ohi).const_array(mfi) : foo;
+
+                    const auto& mask_lo = maskvals[olo].const_array(mfi);
+                    const auto& mask_hi = maskvals[ohi].const_array(mfi);
+
+                    for (int icomp = 0; icomp < ncomp; ++icomp) {
+
+                        Box bx = amrex::adjCell(vbx,olo);
+                        int len = vbx.length(idim);
+
+                        ParallelFor(bx,
+                            [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                            {
+                                if (idim == 0) {
+                                    int iolo = i;
+                                    int iilo = i+1;
+                                    int iohi = i+len+1;
+                                    int iihi = i+len;
+
+                                    if (mask_lo(i,j,k) > 0) {
+
+                                    }
+
+
+                                } else if (idim == 1) {
+
+                                } else {
+
+                                }
+                            }
+
+                        );
+
+
+                        tags.emplace_back(MLMGABCTag<RT>{iofab, bvlo, bvhi,
+                                                maskvals[olo].const_array(mfi),
+                                                maskvals[ohi].const_array(mfi),
+                                                bdlv[icomp][olo], bdlv[icomp][ohi],
+                                                bx,
+                                                bdcv[icomp][olo], bdcv[icomp][ohi],
+                                                vbx.length(idim), icomp, idim});
+                    }
+                }
+            }
+        }
+
+        ParallelFor(tags,
+            [=] AMREX_GPU_DEVICE (int i, int j, int k, MLMGABCTag<RT> const& tag) noexcept
+            {
+                if (tag.dir == 0)
+                {
+                    mllinop_apply_bc_x(0, i, j, k, tag.blen, tag.fab,
+                                       tag.mask_lo, tag.bctype_lo, tag.bcloc_lo, tag.bcval_lo,
+                                       imaxorder, dxi, flagbc, tag.comp);
+                    mllinop_apply_bc_x(1, i+tag.blen+1, j, k, tag.blen, tag.fab,
+                                       tag.mask_hi, tag.bctype_hi, tag.bcloc_hi, tag.bcval_hi,
+                                       imaxorder, dxi, flagbc, tag.comp);
+                }
+    #if (AMREX_SPACEDIM > 1)
+                else
+    #if (AMREX_SPACEDIM > 2)
+                if (tag.dir == 1)
+    #endif
+                {
+                    mllinop_apply_bc_y(0, i, j, k, tag.blen, tag.fab,
+                                       tag.mask_lo, tag.bctype_lo, tag.bcloc_lo, tag.bcval_lo,
+                                       imaxorder, dyi, flagbc, tag.comp);
+                    mllinop_apply_bc_y(1, i, j+tag.blen+1, k, tag.blen, tag.fab,
+                                       tag.mask_hi, tag.bctype_hi, tag.bcloc_hi, tag.bcval_hi,
+                                       imaxorder, dyi, flagbc, tag.comp);
+                }
+    #if (AMREX_SPACEDIM > 2)
+                else {
+                    mllinop_apply_bc_z(0, i, j, k, tag.blen, tag.fab,
+                                       tag.mask_lo, tag.bctype_lo, tag.bcloc_lo, tag.bcval_lo,
+                                       imaxorder, dzi, flagbc, tag.comp);
+                    mllinop_apply_bc_z(1, i, j, k+tag.blen+1, tag.blen, tag.fab,
+                                       tag.mask_hi, tag.bctype_hi, tag.bcloc_hi, tag.bcval_hi,
+                                       imaxorder, dzi, flagbc, tag.comp);
+                }
+    #endif
+    #endif
+            });
+
+    }
 
     // FB here
 
@@ -1245,7 +1385,7 @@ MLCellLinOpT<MF>::smooth (int amrlev, int mglev, MF& sol, const MF& rhs,
                 const int ngrow = sol.nGrowVect().min();
                 std::cout << "ncomp " << ncomp << " ngrow " << ngrow << " cross " << cross << std::endl;
                 sol.FillBoundary(0, ncomp, IntVect(ngrow), this->m_geom[amrlev][mglev].periodicity(), cross);
-                ghost_cells_valid = 1;
+                ghost_cells_valid = std::min(ngrow, 1);
                 //sol.nGrowVect().min();
             }
 

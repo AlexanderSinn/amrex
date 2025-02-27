@@ -968,6 +968,9 @@ MLABecLaplacianT<MF>::PrecomputeSmoothCoeffs ([[maybe_unused]] int amrlev, [[may
         });
 
     pre_comp.FillBoundary();
+    m_b_coeffs[amrlev][mglev][0].FillBoundary();
+    m_b_coeffs[amrlev][mglev][1].FillBoundary();
+    m_b_coeffs[amrlev][mglev][2].FillBoundary();
 #endif
 }
 

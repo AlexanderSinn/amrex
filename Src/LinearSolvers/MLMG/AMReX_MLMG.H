@@ -1308,6 +1308,8 @@ MLMGT<MF>::mgVcycle (int amrlev, int mglev_top)
     {
         BL_PROFILE_VAR("MLMG::mgVcycle_down::"+std::to_string(mglev), blp_mgv_down_lev);
 
+        res[amrlev][mglev].FillBoundary();
+
         if (verbose >= 4)
         {
             RT norm = norminf(res[amrlev][mglev],0,ncomp,IntVect(0));
@@ -1498,6 +1500,8 @@ MLMGT<MF>::actualBottomSolve ()
     const int mglev = linop.NMGLevels(amrlev) - 1;
     auto& x = cor[amrlev][mglev];
     auto& b = res[amrlev][mglev];
+
+    b.FillBoundary();
 
     setVal(x, RT(0.0));
 
