@@ -65,7 +65,11 @@ struct ParticleTileData
         if constexpr(!ParticleType::is_soa_particle) {
             return this->m_aos[index].pos(dir);
         } else {
-            return this->m_rdata[dir][index];
+            if constexpr (NArrayReal > 0) {
+                return this->m_rdata[dir][index];
+            } else {
+                return m_runtime_rdata[dir][index];
+            }
         }
     }
 
@@ -102,13 +106,21 @@ struct ParticleTileData
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     ParticleReal * rdata (const int attribute_index) const
     {
-        return this->m_rdata[attribute_index];
+        if constexpr (NArrayReal > 0) {
+            return this->m_rdata[attribute_index];
+        } else {
+            return m_runtime_rdata[attribute_index];
+        }
     }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     int * idata (const int attribute_index) const
     {
-        return this->m_idata[attribute_index];
+        if constexpr (NArrayInt > 0) {
+            return this->m_idata[attribute_index];
+        } else {
+            return m_runtime_idata[attribute_index];
+        }
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
@@ -422,14 +434,22 @@ struct alignas(sizeof(double)) SoAParticle : SoAParticleBase
     RealType& pos (int position_index) &
     {
         AMREX_ASSERT(position_index < AMREX_SPACEDIM);
-        return this->m_particle_tile_data.m_rdata[position_index][m_index];
+        if constexpr (NArrayReal > 0) {
+            return this->m_particle_tile_data.m_rdata[position_index][m_index];
+        } else {
+            return this->m_particle_tile_data.m_runtime_rdata[position_index][m_index];
+        }
     }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     RealType pos (int position_index) const &
     {
         AMREX_ASSERT(position_index < AMREX_SPACEDIM);
-        return this->m_particle_tile_data.m_rdata[position_index][m_index];
+        if constexpr (NArrayReal > 0) {
+            return this->m_particle_tile_data.m_rdata[position_index][m_index];
+        } else {
+            return this->m_particle_tile_data.m_runtime_rdata[position_index][m_index];
+        }
     }
 
     static Long NextID ();
@@ -527,7 +547,11 @@ struct ConstParticleTileData
         if constexpr(!ParticleType::is_soa_particle) {
             return this->m_aos[index].pos(dir);
         } else {
-            return this->m_rdata[dir][index];
+            if constexpr (NArrayReal > 0) {
+                return this->m_rdata[dir][index];
+            } else {
+                return m_runtime_rdata[dir][index];
+            }
         }
     }
 
@@ -564,13 +588,21 @@ struct ConstParticleTileData
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const ParticleReal * rdata (const int attribute_index) const
     {
-        return this->m_rdata[attribute_index];
+        if constexpr (NArrayReal > 0) {
+            return this->m_rdata[attribute_index];
+        } else {
+            return m_runtime_rdata[attribute_index];
+        }
     }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const int * idata (const int attribute_index) const
     {
-        return this->m_idata[attribute_index];
+        if constexpr (NArrayInt > 0) {
+            return this->m_idata[attribute_index];
+        } else {
+            return m_runtime_idata[attribute_index];
+        }
     }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
