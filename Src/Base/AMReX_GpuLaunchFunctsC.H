@@ -1,6 +1,7 @@
 #ifndef AMREX_GPU_LAUNCH_FUNCTS_C_H_
 #define AMREX_GPU_LAUNCH_FUNCTS_C_H_
 #include <AMReX_Config.H>
+#include <iostream>
 
 namespace amrex {
 
@@ -182,7 +183,7 @@ void ParallelFor (T n, L const& f) noexcept
 {
     if (!OpenMP::in_parallel()) {
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for
 #endif
         for (T i = 0; i < n; ++i) {
             detail::call_f_scalar_handler(f,i);
@@ -310,7 +311,7 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
         if (!OpenMP::in_parallel()) {
             int h0 = hi[0];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
                 call_f_intvect_handler(f,iv);
@@ -323,9 +324,8 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
     } else if constexpr (idim == 2) {
         if (!OpenMP::in_parallel()) {
             int h1 = hi[1];
-            std::cout << "###Problem###" << std::endl;
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
             AMREX_PRAGMA_SIMD
@@ -344,7 +344,7 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
             int h2 = hi[2];
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for collapse(2)
+#pragma omp parallel for private(iv) collapse(2)
 #endif
             for (int i2 = lo[2]; i2 <= h2; ++i2) { iv[2] = i2;
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
@@ -471,7 +471,7 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
         if (!OpenMP::in_parallel()) {
             int h0 = hi[0];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
                 call_f_intvect_ncomp_handler(f,iv,n);
@@ -485,7 +485,7 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
         if (!OpenMP::in_parallel()) {
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
             AMREX_PRAGMA_SIMD
@@ -504,7 +504,7 @@ void ParallelFor_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> cons
             int h2 = hi[2];
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for collapse(2)
+#pragma omp parallel for private(iv) collapse(2)
 #endif
             for (int i2 = lo[2]; i2 <= h2; ++i2) { iv[2] = i2;
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
@@ -1345,7 +1345,7 @@ void ParallelForRNG (T n, L const& f) noexcept
 {
     if (!OpenMP::in_parallel()) {
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for
 #endif
         for (T i = 0; i < n; ++i) {
             f(i,RandomEngine{});
@@ -1367,7 +1367,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
         if (!OpenMP::in_parallel()) {
             int h0 = hi[0];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
                 call_f_intvect_engine(f,iv,RandomEngine{});
@@ -1381,7 +1381,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
         if (!OpenMP::in_parallel()) {
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
             for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
@@ -1398,7 +1398,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
             int h2 = hi[2];
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for collapse(2)
+#pragma omp parallel for private(iv) collapse(2)
 #endif
             for (int i2 = lo[2]; i2 <= h2; ++i2) { iv[2] = i2;
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
@@ -1427,7 +1427,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
         if (!OpenMP::in_parallel()) {
             int h0 = hi[0];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for ( int i0 = lo[0]; i0 <= h0; ++i0) { iv[0] = i0;
                 call_f_intvect_ncomp_engine(f,iv,n,RandomEngine{});
@@ -1441,7 +1441,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
         if (!OpenMP::in_parallel()) {
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for
+#pragma omp parallel for private(iv)
 #endif
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
             for (int i0 = lo[0], h0 = hi[0]; i0 <= h0; ++i0) { iv[0] = i0;
@@ -1458,7 +1458,7 @@ void ParallelForRNG_impND (L const& f, IntVectND<dim> const lo, IntVectND<dim> c
             int h2 = hi[2];
             int h1 = hi[1];
 #ifdef AMREX_USE_OMP
-// #pragma omp parallel for collapse(2)
+#pragma omp parallel for private(iv) collapse(2)
 #endif
             for (int i2 = lo[2]; i2 <= h2; ++i2) { iv[2] = i2;
             for (int i1 = lo[1]; i1 <= h1; ++i1) { iv[1] = i1;
