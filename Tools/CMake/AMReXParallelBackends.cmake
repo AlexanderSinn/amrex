@@ -344,26 +344,11 @@ if (AMReX_HIP)
        endforeach()
    endif()
 
-   # ROCm 5.5: hipcc now relies on clang to offload code objects from (.a) archive files,
-   # so we need to tell the offload-linker to include all code objects in archives.
-   include(CheckLinkerFlag)
-   check_linker_flag(
-       CXX
-       "SHELL:-Xoffload-linker --whole-archive"
-       LINKER_HAS_WHOLE_ARCHIVE_OFFLOAD)
-   if(LINKER_HAS_WHOLE_ARCHIVE_OFFLOAD)
-       foreach(D IN LISTS AMReX_SPACEDIM)
-           target_link_options(amrex_${D}d PUBLIC
-               "$<$<LINK_LANGUAGE:HIP>:SHELL:-Xoffload-linker --whole-archive>"
-               "$<$<LINK_LANGUAGE:CXX>:SHELL:-Xoffload-linker --whole-archive>")
-       endforeach()
-   endif()
-
    foreach(D IN LISTS AMReX_SPACEDIM)
        target_compile_options(amrex_${D}d PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-m64>)
 
        # ROCm 4.5: use unsafe floating point atomics, otherwise atomicAdd is much slower
-       # 
+       #
        target_compile_options(amrex_${D}d PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-munsafe-fp-atomics>)
 
        # ROCm 5.5: forgets to enforce C++17 (default seems lower)
