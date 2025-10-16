@@ -23,11 +23,11 @@ COMP_VERSION = $(clang_version)
 
 ifeq ($(DEBUG),TRUE)
 
-  CXXFLAGS += -g -O0 -ftrapv
-  CFLAGS   += -g -O0 -ftrapv
+  CXXFLAGS += -g -O$(DEBUG_OPT_LEVEL) -ftrapv
+  CFLAGS   += -g -O$(DEBUG_OPT_LEVEL) -ftrapv
 
-  FFLAGS   += -g -O0 -ggdb -fbounds-check -fbacktrace -Wuninitialized -Wunused -ffpe-trap=invalid,zero -finit-real=snan -finit-integer=2147483647 -ftrapv
-  F90FLAGS += -g -O0 -ggdb -fbounds-check -fbacktrace -Wuninitialized -Wunused -ffpe-trap=invalid,zero -finit-real=snan -finit-integer=2147483647 -ftrapv
+  FFLAGS   += -g -O$(DEBUG_OPT_LEVEL) -ggdb -fbounds-check -fbacktrace -Wuninitialized -Wunused -ffpe-trap=invalid,zero -finit-real=snan -finit-integer=2147483647 -ftrapv
+  F90FLAGS += -g -O$(DEBUG_OPT_LEVEL) -ggdb -fbounds-check -fbacktrace -Wuninitialized -Wunused -ffpe-trap=invalid,zero -finit-real=snan -finit-integer=2147483647 -ftrapv
 
 else
 
@@ -59,6 +59,11 @@ ifeq ($(WARN_ERROR),TRUE)
   CFLAGS += -Werror
 endif
 
+ifeq ($(USE_COMPILE_PIC),TRUE)
+  CXXFLAGS += -fPIC
+  CFLAGS += -fPIC
+endif
+
 # disable some warnings
 CXXFLAGS += -Wno-c++17-extensions
 
@@ -72,6 +77,14 @@ endif
 
 CXXFLAGS += -std=$(CXXSTD)
 CFLAGS   += -std=c11
+
+
+ifeq ($(USE_COMPILE_PIC),TRUE)
+
+  FFLAGS += -fPIC
+  F90FLAGS += -fPIC
+
+endif
 
 FFLAGS   += -ffixed-line-length-none -fno-range-check -fno-second-underscore
 F90FLAGS += -ffree-line-length-none -fno-range-check -fno-second-underscore -fimplicit-none

@@ -65,6 +65,9 @@ public:
 
     std::size_t freeUnused () final;
 
+    //! Return the amount of memory that can be freed
+    [[nodiscard]] std::size_t freeableMemory () const;
+
     /**
      * \brief Does the device have enough free memory for allocating this
      * much memory?  For CPU builds, this always return true.  This is not a
@@ -160,7 +163,7 @@ protected:
         MemStat* m_stat;
     };
 
-    //! The list of blocks allocated via ::operator new().
+    //! The list of blocks allocated.
     std::vector<std::pair<void*,std::size_t> > m_alloc;
 
     /**

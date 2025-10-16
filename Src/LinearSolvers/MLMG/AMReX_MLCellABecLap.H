@@ -77,7 +77,7 @@ public:
     [[nodiscard]] std::unique_ptr<Hypre> makeHypre (Hypre::Interface hypre_interface) const override;
 #endif
 
-#ifdef AMREX_USE_PETSC
+#if defined(AMREX_USE_PETSC) && (AMREX_SPACEDIM > 1)
     [[nodiscard]] std::unique_ptr<PETScABecLap> makePETSc () const override;
 #endif
 
@@ -285,12 +285,14 @@ MLCellABecLapT<MF>::getFluxes (const Vector<Array<MF*,AMREX_SPACEDIM> >& a_flux,
     for (int alev = 0; alev < nlevs; ++alev) {
         this->compFlux(alev, a_flux[alev], *a_sol[alev], a_loc);
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-            this->unapplyMetricTerm(alev, 0, *a_flux[alev][idim]);
             if (betainv != RT(1.0)) {
                 a_flux[alev][idim]->mult(betainv, 0, ncomp);
             }
         }
         this->addInhomogNeumannFlux(alev, a_flux[alev], *a_sol[alev], true);
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            this->unapplyMetricTerm(alev, 0, *a_flux[alev][idim]);
+        }
     }
 }
 
@@ -724,7 +726,7 @@ MLCellABecLapT<MF>::makeHypre (Hypre::Interface hypre_interface) const
 }
 #endif
 
-#ifdef AMREX_USE_PETSC
+#if defined(AMREX_USE_PETSC) && (AMREX_SPACEDIM > 1)
 template <typename MF>
 std::unique_ptr<PETScABecLap>
 MLCellABecLapT<MF>::makePETSc () const

@@ -36,6 +36,8 @@ struct ParticleTileData
     using ParticleType = T_ParticleType;
     using ParticleRefType = T_ParticleType&;
     using Self = ParticleTileData<ParticleType, NAR, NAI>;
+    using RealType = ParticleReal;
+    using IntType = int;
 
     static constexpr int NStructReal = ParticleType::NReal;
     static constexpr int NStructInt = ParticleType::NInt;
@@ -60,7 +62,7 @@ struct ParticleTileData
     int* AMREX_RESTRICT * AMREX_RESTRICT m_runtime_idata;
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    ParticleReal& pos (const int dir, const int index) const &
+    decltype(auto) pos (const int dir, const int index) const &
     {
         if constexpr(!ParticleType::is_soa_particle) {
             return this->m_aos[index].pos(dir);
@@ -95,7 +97,7 @@ struct ParticleTileData
         if constexpr(ParticleType::is_soa_particle) {
             return this->m_idcpu[index];
         } else {
-            amrex::Abort("not implemented");
+            return this->m_aos[index].idcpu();
         }
     }
 
@@ -329,6 +331,7 @@ struct alignas(sizeof(double)) ConstSoAParticle : SoAParticleBase
     static constexpr bool is_constsoa_particle = true;
 
     using RealType = ParticleReal;
+    using IntType = int;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     ConstSoAParticle (ConstPTD const& ptd, long i) : // Note: should this be int instead?
@@ -374,7 +377,7 @@ struct alignas(sizeof(double)) ConstSoAParticle : SoAParticleBase
 
     private :
 
-    static_assert(std::is_trivially_copyable<ParticleTileData<SoAParticleBase, NArrayReal, NArrayInt>>(), "ParticleTileData is not trivially copyable");
+    static_assert(std::is_trivially_copyable<ConstPTD>(), "ParticleTileData is not trivially copyable");
 
     ConstPTD m_constparticle_tile_data;
     int m_index;
@@ -392,6 +395,7 @@ struct alignas(sizeof(double)) SoAParticle : SoAParticleBase
 
     using ConstType = ConstSoAParticle<T_NArrayReal, T_NArrayInt>;
     using RealType = ParticleReal;
+    using IntType = int;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     SoAParticle (PTD const& ptd, long i) : // Note: should this be int instead?
@@ -407,7 +411,7 @@ struct alignas(sizeof(double)) SoAParticle : SoAParticleBase
     ParticleCPUWrapper cpu () & { return this->m_particle_tile_data.m_idcpu[m_index]; }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    ParticleIDWrapper id () & { return this->m_particle_tile_data.m_idcpu[m_index]; }
+    ParticleIDWrapper<> id () & { return this->m_particle_tile_data.m_idcpu[m_index]; }
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     uint64_t& idcpu () & { return this->m_particle_tile_data.m_idcpu[m_index]; }
@@ -456,7 +460,7 @@ struct alignas(sizeof(double)) SoAParticle : SoAParticleBase
 
 private :
 
-    static_assert(std::is_trivially_copyable<ParticleTileData<SoAParticleBase, NArrayReal, NArrayInt>>(), "ParticleTileData is not trivially copyable");
+    static_assert(std::is_trivially_copyable<PTD>(), "ParticleTileData is not trivially copyable");
 
     PTD m_particle_tile_data;
     int m_index;
@@ -511,6 +515,8 @@ struct ConstParticleTileData
     static constexpr int NAI = NArrayInt;
     using ParticleType = T_ParticleType;
     using ParticleRefType = T_ParticleType const&;
+    using RealType = ParticleReal;
+    using IntType = int;
 
     static constexpr int NStructReal = ParticleType::NReal;
     static constexpr int NStructInt = ParticleType::NInt;
@@ -530,7 +536,7 @@ struct ConstParticleTileData
     GpuArray<const int*, NArrayInt > m_idata;
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const ParticleReal& pos (const int dir, const int index) const &
+    decltype(auto) pos (const int dir, const int index) const &
     {
         if constexpr(!ParticleType::is_soa_particle) {
             return this->m_aos[index].pos(dir);
@@ -565,7 +571,7 @@ struct ConstParticleTileData
         if constexpr(ParticleType::is_soa_particle) {
             return this->m_idcpu[index];
         } else {
-            amrex::Abort("not implemented");
+            return this->m_aos[index].idcpu();
         }
     }
 
@@ -742,6 +748,9 @@ struct ParticleTile
     using ParticleTileDataType = ParticleTileData<StorageParticleType, NArrayReal, NArrayInt>;
     using ConstParticleTileDataType = ConstParticleTileData<StorageParticleType, NArrayReal, NArrayInt>;
 
+    static constexpr bool has_polymorphic_allocator =
+        IsPolymorphicArenaAllocator<Allocator<RealType>>::value;
+
     ParticleTile () = default;
 
 #ifndef _WIN32  // workaround windows compiler bug
@@ -758,15 +767,51 @@ struct ParticleTile
         int a_num_runtime_real,
         int a_num_runtime_int,
         std::vector<std::string>* soa_rdata_names=nullptr,
-        std::vector<std::string>* soa_idata_names=nullptr
+        std::vector<std::string>* soa_idata_names=nullptr,
+        Arena* a_arena=nullptr
     )
     {
-        m_defined = true;
         GetStructOfArrays().define(a_num_runtime_real, a_num_runtime_int, soa_rdata_names, soa_idata_names);
         m_runtime_r_ptrs.resize(a_num_runtime_real);
         m_runtime_i_ptrs.resize(a_num_runtime_int);
         m_runtime_r_cptrs.resize(a_num_runtime_real);
         m_runtime_i_cptrs.resize(a_num_runtime_int);
+
+        if constexpr (has_polymorphic_allocator) {
+            if (m_defined) {
+                // it is not allowed to change the arena after the tile has been defined
+                if constexpr (ParticleType::is_soa_particle) {
+                    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+                        a_arena == GetStructOfArrays().GetIdCPUData().arena(),
+                        "ParticleTile with PolymorphicArenaAllocator redefined with "
+                        "different memory arena");
+                } else {
+                    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+                        a_arena == m_aos_tile().arena(),
+                        "ParticleTile with PolymorphicArenaAllocator redefined with "
+                        "different memory arena");
+                }
+            }
+
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(a_arena != nullptr,
+                "ParticleTile with PolymorphicArenaAllocator defined with no memory arena! "
+                "Make sure to call setArena() on the ParticleContainer before initialization or "
+                "to pass an Arena to ParticleTile::define()");
+
+            if constexpr (ParticleType::is_soa_particle) {
+                GetStructOfArrays().GetIdCPUData().setArena(a_arena);
+            } else {
+                m_aos_tile().setArena(a_arena);
+            }
+            for (int j = 0; j < NumRealComps(); ++j) {
+                GetStructOfArrays().GetRealData(j).setArena(a_arena);
+            }
+            for (int j = 0; j < NumIntComps(); ++j) {
+                GetStructOfArrays().GetIntData(j).setArena(a_arena);
+            }
+        }
+
+        m_defined = true;
     }
 
     // Get id data
@@ -946,6 +991,14 @@ struct ParticleTile
             auto& idata = GetStructOfArrays().GetIntData(j);
             idata.resize_geometric_grow(count);
         }
+    }
+
+    void reserve (std::size_t capacity)
+    {
+        if constexpr (!ParticleType::is_soa_particle) {
+            m_aos_tile.reserve(capacity);
+        }
+        m_soa_tile.reserve(capacity);
     }
 
     ///

@@ -116,7 +116,13 @@ bool
 amrex::UtilCreateDirectory (const std::string& path,
                             mode_t mode, bool verbose)
 {
-    return FileSystem::CreateDirectories(path, mode, verbose);
+    double sleep = 0.1;
+    while (sleep < 2.0) {
+        if (FileSystem::CreateDirectories(path, mode, verbose)) { return true; }
+        amrex::Sleep(sleep);
+        sleep *= 2;
+    }
+    return false;
 }
 
 void
@@ -231,7 +237,7 @@ amrex::UtilRenameDirectoryToOld (const std::string &path, bool callbarrier)
 void
 amrex::OutOfMemory ()
 {
-    amrex::Error("Sorry, out of memory, bye ...");
+    amrex::Error("Terminating due to insufficient CPU memory.");
 }
 
 // -------------------------------------------------------------------
