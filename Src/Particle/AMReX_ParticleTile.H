@@ -973,6 +973,26 @@ struct ParticleTile
         m_soa_tile.resize(count);
     }
 
+    void resize_poisson_grow (std::size_t count)
+    {
+        if constexpr (ParticleType::is_soa_particle) {
+            GetStructOfArrays().GetIdCPUData().resize_poisson_grow(count);
+        } else {
+            m_aos_tile().resize_poisson_grow(count);
+        }
+        for (int j = 0; j < NumRealComps(); ++j)
+        {
+            auto& rdata = GetStructOfArrays().GetRealData(j);
+            rdata.resize_poisson_grow(count);
+        }
+
+        for (int j = 0; j < NumIntComps(); ++j)
+        {
+            auto& idata = GetStructOfArrays().GetIntData(j);
+            idata.resize_poisson_grow(count);
+        }
+    }
+
     void reserve (std::size_t capacity)
     {
         if constexpr (!ParticleType::is_soa_particle) {

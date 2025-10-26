@@ -49,7 +49,7 @@ struct RedistributeUnpackPolicy
         }
 
         for (auto& kv : tile_sizes) {
-            kv.first->resize(kv.second);
+            kv.first->resize_poisson_grow(kv.second);
         }
     }
 };
