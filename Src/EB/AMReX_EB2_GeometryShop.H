@@ -381,7 +381,7 @@ public:
                                        problo[2]+amrex::Clamp(ivhi[2],blo.z,bhi.z)*dx[2])},
                             idim, f);
                 } else {
-                    inter(i,j,k) =std::numeric_limits<Real>::quiet_NaN();
+                    inter(i,j,k) = std::numeric_limits<Real>::quiet_NaN();
                 }
             });
         }
@@ -448,7 +448,7 @@ public:
                                    problo[2]+amrex::Clamp(ivhi[2],blo.z,bhi.z)*dx[2])},
                      idim, m_f);
             } else {
-                inter(i,j,k) =std::numeric_limits<Real>::quiet_NaN();
+                inter(i,j,k) = std::numeric_limits<Real>::quiet_NaN();
             }
         });
     }

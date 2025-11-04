@@ -1112,7 +1112,7 @@ STLtools::getIntercept (Array<Array4<Real>,AMREX_SPACEDIM> const& inter_arr,
 #ifdef AMREX_USE_CUDA
             amrex::ignore_unused(num_triangles,tri_pts,tri_norm,lst,bvh_root);
 #endif
-            Real r =std::numeric_limits<Real>::quiet_NaN();
+            Real r = std::numeric_limits<Real>::quiet_NaN();
             if (type(i,j,k) == EB2::Type::irregular) {
                 XDim3 p1{plo[0]+static_cast<Real>(i)*dx[0],
                          plo[1]+static_cast<Real>(j)*dx[1],

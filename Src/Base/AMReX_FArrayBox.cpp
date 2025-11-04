@@ -418,7 +418,7 @@ FArrayBox::Initialize ()
     }
 
     initval =std::numeric_limits<Real>::has_quiet_NaN
-            ?std::numeric_limits<Real>::quiet_NaN()
+            ? std::numeric_limits<Real>::quiet_NaN()
             :std::numeric_limits<Real>::max();
 
     pp.query("initval",    initval);
