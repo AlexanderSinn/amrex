@@ -7,6 +7,10 @@
 
 namespace amrex {
 
+void print_Mock_err (double v) {
+    std::cout << "value " << v << " is out of bounds" << std::endl;
+}
+
 RealBox::RealBox (const Box&  bx,
                   const Real* dx,
                   const Real* base) noexcept

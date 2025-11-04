@@ -78,6 +78,9 @@ namespace amrex {
             std::is_same_v<U, unsigned long long> || std::is_same_v<U, bool> \
         ), int> = 0>
 
+
+    void print_Mock_err (double v);
+
     struct MockReal {
         double val = 0.;
 
@@ -107,7 +110,7 @@ namespace amrex {
                 a != double(FLT_MAX) &&
                 a != double(FLT_MIN) &&
                 (a > 3.e38 || a < 2.e-38)) {
-                std::cout << "value " << a << " is out of bounds" << std::endl;
+                print_Mock_err(a);
             }
         }
 
