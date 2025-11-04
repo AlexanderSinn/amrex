@@ -8,6 +8,7 @@
 #include <utility>
 #include <type_traits>
 #include <limits>
+#include <cmath>
 
 #ifdef BL_USE_FLOAT
 #  undef BL_USE_DOUBLE
@@ -80,6 +81,7 @@ namespace amrex {
 
 
     void print_Mock_err (double v);
+    void print_Mock_add_err (double a, double b);
 
     struct MockReal {
         double val = 0.;
@@ -114,6 +116,12 @@ namespace amrex {
             }
         }
 
+        static constexpr void check_add(double a, double b) {
+            if (std::abs(a + b) * 1.e6 < std::abs(a - b)) {
+                print_Mock_add_err(a, b);
+            }
+        }
+
         constexpr operator double () {
             return val;
         }
@@ -123,12 +131,14 @@ namespace amrex {
         }
 
         constexpr MockReal& operator+= (const MockReal& a) {
+            check_add(val, a.val);
             val += a.val;
             check_val();
             return *this;
         }
 
         constexpr MockReal& operator-= (const MockReal& a) {
+            check_add(val, -a.val);
             val -= a.val;
             check_val();
             return *this;
@@ -152,11 +162,13 @@ namespace amrex {
 
         TEMPLATE_TWO_TYPE
         constexpr friend MockReal operator+ (const T& a, const U& b) {
+            check_add(MockReal{a}.val, MockReal{b}.val);
             return MockReal{a}.val + MockReal{b}.val;
         }
 
         TEMPLATE_TWO_TYPE
         constexpr friend MockReal operator- (const T& a, const U& b) {
+            check_add(MockReal{a}.val, -MockReal{b}.val);
             return MockReal{a}.val - MockReal{b}.val;
         }
 

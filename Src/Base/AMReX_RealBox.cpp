@@ -9,6 +9,13 @@ namespace amrex {
 
 void print_Mock_err (double v) {
     std::cout << "value " << v << " is out of bounds" << std::endl;
+    throw v;
+}
+
+void print_Mock_add_err (double a, double b) {
+    std::cout << "catastrophic cancelation: a= "
+              << a << " b= " << b << " a+b= " << a+b
+              << std::endl;
 }
 
 RealBox::RealBox (const Box&  bx,
