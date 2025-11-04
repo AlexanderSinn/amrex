@@ -133,6 +133,13 @@ is (const std::string& str, double& val)
 
 template <>
 bool
+is (const std::string& str, MockReal& val)
+{
+    return is_floating_point(str, val.val);
+}
+
+template <>
+bool
 is (const std::string& str, std::string& val)
 {
     val = str;
@@ -712,6 +719,7 @@ squeryval (const ParmParse::Table& table,
                       std::is_same_v<T,int> ||
                       std::is_same_v<T,long> ||
                       std::is_same_v<T,long long> ||
+                      std::is_same_v<T,MockReal> ||
                       std::is_same_v<T,float> ||
                       std::is_same_v<T,double>)
         {
@@ -832,6 +840,10 @@ squeryarr (const ParmParse::Table& table,
                           std::is_same_v<T,double>)
             {
                 if (pp_parser(table, parser_prefix, name, valname, ref[n], false)) {
+                    continue;
+                }
+            } else if constexpr (std::is_same_v<T,MockReal>) {
+                if (pp_parser(table, parser_prefix, name, valname, ref[n].val, false)) {
                     continue;
                 }
             } else {
@@ -1748,6 +1760,52 @@ ParmParse::queryarr (std::string_view    name,
 void
 ParmParse::addarr (std::string_view          name, // NOLINT(readability-make-member-function-const)
                    const std::vector<float>& ref)
+{
+    saddarr(prefixedName(name),ref);
+}
+
+
+void
+ParmParse::getktharr (std::string_view    name,
+                      int                 k,
+                      std::vector<MockReal>& ref,
+                      int                 start_ix,
+                      int                 num_val) const
+{
+    sgetarr(*m_table,m_parser_prefix, prefixedName(name),ref,start_ix,num_val,k);
+}
+
+void
+ParmParse::getarr (std::string_view    name,
+                   std::vector<MockReal>& ref,
+                   int                 start_ix,
+                   int                 num_val) const
+{
+    sgetarr(*m_table,m_parser_prefix, prefixedName(name),ref,start_ix,num_val, LAST);
+}
+
+int
+ParmParse::queryktharr (std::string_view    name,
+                        int                 k,
+                        std::vector<MockReal>& ref,
+                        int                 start_ix,
+                        int                 num_val) const
+{
+    return squeryarr(*m_table,m_parser_prefix, prefixedName(name),ref,start_ix, num_val,k);
+}
+
+int
+ParmParse::queryarr (std::string_view    name,
+                     std::vector<MockReal>& ref,
+                     int                 start_ix,
+                     int                 num_val) const
+{
+    return squeryarr(*m_table,m_parser_prefix, prefixedName(name),ref,start_ix,num_val, LAST);
+}
+
+void
+ParmParse::addarr (std::string_view          name, // NOLINT(readability-make-member-function-const)
+                   const std::vector<MockReal>& ref)
 {
     saddarr(prefixedName(name),ref);
 }

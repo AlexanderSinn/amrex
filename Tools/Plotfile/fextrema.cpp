@@ -92,8 +92,8 @@ void main_main()
                                       auto x = ma[bno](i,j,k);
                                       return {x,x};
                                   } else {
-                                      return {std::numeric_limits<Real>::max(),
-                                              std::numeric_limits<Real>::lowest()};
+                                      return { std::numeric_limits<Real>::max(),
+                                               std::numeric_limits<Real>::lowest()};
                                   }
                               });
                     vvmin[ivar] = std::min(amrex::get<0>(rr), vvmin[ivar]);

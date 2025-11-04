@@ -14,7 +14,7 @@ void FillSignedDistance (MultiFab& mf, bool fluid_has_positive_sign)
     if (factory) {
         FillSignedDistance(mf, *(factory->getEBLevel()), *factory, 1, fluid_has_positive_sign);
     } else {
-        mf.setVal(std::numeric_limits<Real>::max());
+        mf.setVal( std::numeric_limits<Real>::max());
     }
 }
 
@@ -42,7 +42,7 @@ facets_nearest_pt (IntVect const& ind_pt, IntVect const& ind_loop, RealVect cons
 
     // scalar characterizing EB facet position
     Real eb_h = eb_normal.dotProduct(eb_p0);
-    Real min_dist = std::numeric_limits<Real>::max();
+    Real min_dist =  std::numeric_limits<Real>::max();
     RealVect c_vec;
 
     // iterate over EB facet edges and find whichever has the closest nearest point
@@ -57,7 +57,7 @@ facets_nearest_pt (IntVect const& ind_pt, IntVect const& ind_loop, RealVect cons
         Real c_dp = eb_normal.dotProduct(facet_normal);
         Real c_norm = 1._rt - c_dp*c_dp;
 
-        Real eps = std::numeric_limits<Real>::epsilon();
+        Real eps =  std::numeric_limits<Real>::epsilon();
 
         // skip cases where cell faces coincide with the eb facets
         if (std::abs(c_norm) <= eps) {
@@ -127,12 +127,12 @@ facets_nearest_pt (IntVect const& ind_pt, IntVect const& ind_loop, RealVect cons
         // the min/max values of lambda, in order for the point described by
         // lambda to be contained within the box.
         //
-        Real cx_lo = -std::numeric_limits<Real>::max();
-        Real cy_lo = -std::numeric_limits<Real>::max();
-        Real cz_lo = -std::numeric_limits<Real>::max();
-        Real cx_hi = std::numeric_limits<Real>::max();
-        Real cy_hi = std::numeric_limits<Real>::max();
-        Real cz_hi = std::numeric_limits<Real>::max();
+        Real cx_lo = - std::numeric_limits<Real>::max();
+        Real cy_lo = - std::numeric_limits<Real>::max();
+        Real cz_lo = - std::numeric_limits<Real>::max();
+        Real cx_hi =  std::numeric_limits<Real>::max();
+        Real cy_hi =  std::numeric_limits<Real>::max();
+        Real cz_hi =  std::numeric_limits<Real>::max();
         // if the line runs parallel to any of these dimensions (which is true for
         // EB edges), then skip -> the min/max functions at the end will skip them
         // due to the +/-huge(c...) defaults (above).
@@ -310,7 +310,7 @@ void FillSignedDistance (MultiFab& mf, EB2::Level const& ls_lev,
                     AMREX_D_TERM(Real x = i*dx_ls[0];,
                                  Real y = j*dx_ls[1];,
                                  Real z = k*dx_ls[2]);
-                    Real min_dist2 = std::numeric_limits<Real>::max();
+                    Real min_dist2 =  std::numeric_limits<Real>::max();
                     int i_nearest = 0;
                     for (int ifac  = 0; ifac < ncutcells; ++ifac) {
                         AMREX_D_TERM(Real cx = p_facets[ifac][0];,

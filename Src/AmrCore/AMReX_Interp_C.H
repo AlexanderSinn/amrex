@@ -121,7 +121,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci,cj+1,ck,n) - crse(ci,cj  ,ck,n));
                 Real db = Real(2.0) * (crse(ci,cj  ,ck,n) - crse(ci,cj-1,ck,n));
                 Real sy = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sy = std::copysign(Real(1.),dc)*amrex::min(sy,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfy = amrex::min(sfy, sy / dc);
@@ -137,7 +137,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci,cj,ck+1,n) - crse(ci,cj,ck  ,n));
                 Real db = Real(2.0) * (crse(ci,cj,ck  ,n) - crse(ci,cj,ck-1,n));
                 Real sz = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sz = std::copysign(Real(1.),dc)*amrex::min(sz,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfz = amrex::min(sfz, sz / dc);
@@ -162,7 +162,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci+1,cj,ck,n) - crse(ci  ,cj,ck,n));
                 Real db = Real(2.0) * (crse(ci  ,cj,ck,n) - crse(ci-1,cj,ck,n));
                 Real sx = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfx = amrex::min(sfx, sx / dc);
@@ -178,7 +178,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci,cj,ck+1,n) - crse(ci,cj,ck  ,n));
                 Real db = Real(2.0) * (crse(ci,cj,ck  ,n) - crse(ci,cj,ck-1,n));
                 Real sz = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sz = std::copysign(Real(1.),dc)*amrex::min(sz,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfz = amrex::min(sfz, sz / dc);
@@ -203,7 +203,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci+1,cj,ck,n) - crse(ci  ,cj,ck,n));
                 Real db = Real(2.0) * (crse(ci  ,cj,ck,n) - crse(ci-1,cj,ck,n));
                 Real sx = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfx = amrex::min(sfx, sx / dc);
@@ -218,7 +218,7 @@ face_cons_linear_face_interp (int i, int j, int k, int n, Array4<T> const& fine,
                 Real df = Real(2.0) * (crse(ci,cj+1,ck,n) - crse(ci,cj  ,ck,n));
                 Real db = Real(2.0) * (crse(ci,cj  ,ck,n) - crse(ci,cj-1,ck,n));
                 Real sy = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sy = std::copysign(Real(1.),dc)*amrex::min(sy,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfy = amrex::min(sfy, sy / dc);

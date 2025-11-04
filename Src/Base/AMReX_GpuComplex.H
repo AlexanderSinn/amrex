@@ -38,6 +38,10 @@ struct alignas(2*sizeof(T)) GpuComplex
     constexpr GpuComplex (const T& a_r = T(), const T& a_i = T()) noexcept
         : m_real(a_r), m_imag(a_i) {}
 
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    constexpr GpuComplex (const int& a_r) noexcept
+        : m_real(T(a_r)), m_imag() {}
+
     /**
      * \brief Return the real part.
      */

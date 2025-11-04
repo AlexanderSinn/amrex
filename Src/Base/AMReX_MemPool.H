@@ -20,7 +20,7 @@ extern "C" {
 
 namespace amrex {
     template <RunOn run_on, typename T,
-              std::enable_if_t<std::is_same_v<T,double> || std::is_same_v<T,float>, int> FOO = 0>
+              std::enable_if_t<std::is_same_v<T,double> || std::is_same_v<T,float> || std::is_same_v<T,Real>, int> FOO = 0>
     void fill_snan (T* p, std::size_t nelems)
     {
         if (p == nullptr || nelems == 0) { return; }

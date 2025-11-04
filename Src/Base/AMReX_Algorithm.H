@@ -18,28 +18,40 @@ namespace amrex
 {
     template <class T>
     AMREX_GPU_HOST_DEVICE
-    AMREX_FORCE_INLINE constexpr const T& min (const T& a, const T& b) noexcept
+    AMREX_FORCE_INLINE constexpr const T min (const T& a, const T& b) noexcept
     {
         return std::min(a,b);
     }
 
+    AMREX_GPU_HOST_DEVICE
+    AMREX_FORCE_INLINE constexpr MockReal min (const MockReal& a, const MockReal& b) noexcept
+    {
+        return MockReal{std::min(a.val,b.val)};
+    }
+
     template <class T, class ... Ts>
     AMREX_GPU_HOST_DEVICE
-    AMREX_FORCE_INLINE constexpr const T& min (const T& a, const T& b, const Ts& ... c) noexcept
+    AMREX_FORCE_INLINE constexpr const T min (const T& a, const T& b, const Ts& ... c) noexcept
     {
         return min(min(a,b),c...);
     }
 
     template <class T>
     AMREX_GPU_HOST_DEVICE
-    AMREX_FORCE_INLINE constexpr const T& max (const T& a, const T& b) noexcept
+    AMREX_FORCE_INLINE constexpr const T max (const T& a, const T& b) noexcept
     {
         return std::max(a,b);
     }
 
+    AMREX_GPU_HOST_DEVICE
+    AMREX_FORCE_INLINE constexpr MockReal max (const MockReal& a, const MockReal& b) noexcept
+    {
+        return MockReal{std::max(a.val,b.val)};
+    }
+
     template <class T, class ... Ts>
     AMREX_GPU_HOST_DEVICE
-    AMREX_FORCE_INLINE constexpr const T& max (const T& a, const T& b, const Ts& ... c) noexcept
+    AMREX_FORCE_INLINE constexpr const T max (const T& a, const T& b, const Ts& ... c) noexcept
     {
         return max(max(a,b),c...);
     }

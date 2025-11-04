@@ -18,7 +18,7 @@ namespace nodelap_detail {
 #else
     constexpr double eps = 1.e-100_rt;
 #endif
-    constexpr Real almostone  = Real(1.) - Real(100.)*std::numeric_limits<Real>::epsilon();
+    constexpr Real almostone  = Real(1.) - Real(100.)* std::numeric_limits<Real>::epsilon();
     constexpr Real almostzero = Real(1.) - almostone;
 
 }

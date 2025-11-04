@@ -185,7 +185,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 std::pair<T_Real,T_Real> sincospi (T_Real x)
 {
     using namespace amrex::simd::stdx;
-    T_Real const px = pi<typename T_Real::value_type>() * x;
+    T_Real const px = pi<typename T_ std::numeric_limits<Real>::value_type>() * x;
     std::pair<T_Real,T_Real> r;
     r.first = sin(px);
     r.second = cos(px);

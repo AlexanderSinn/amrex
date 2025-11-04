@@ -3851,7 +3851,7 @@ FabArray<FAB>::norminf (int comp, int ncomp, IntVect const& nghost, bool local,
                     AMREX_LOOP_4D(bx, ncomp, i, j, k, n,
                     {
                         if (!flag(i,j,k).isCovered()) {
-                            nm0 = std::max(nm0, std::abs(a(i,j,k,comp+n)));
+                            nm0 = amrex::max(nm0, std::abs(a(i,j,k,comp+n)));
                         }
                     });
                 }
@@ -3880,7 +3880,7 @@ FabArray<FAB>::norminf (int comp, int ncomp, IntVect const& nghost, bool local,
                 auto const& a = this->const_array(mfi);
                 AMREX_LOOP_4D(bx, ncomp, i, j, k, n,
                 {
-                    nm0 = std::max(nm0, std::abs(a(i,j,k,comp+n)));
+                    nm0 = amrex::max(nm0, std::abs(a(i,j,k,comp+n)));
                 });
             }
         }
@@ -3936,7 +3936,7 @@ FabArray<FAB>::norminf (FabArray<IFAB> const& mask, int comp, int ncomp,
             AMREX_LOOP_4D(bx, ncomp, i, j, k, n,
             {
                 if (mskfab(i,j,k)) {
-                    nm0 = std::max(nm0, std::abs(a(i,j,k,comp+n)));
+                    nm0 = amrex::max(nm0, std::abs(a(i,j,k,comp+n)));
                 }
             });
         }

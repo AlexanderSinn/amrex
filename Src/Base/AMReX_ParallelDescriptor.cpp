@@ -55,6 +55,14 @@ namespace
 
 namespace amrex::ParallelDescriptor {
 
+template <>
+MPI_Datatype
+Mpi_typemap<MockReal>::type ()
+{
+    return  MPI_DOUBLE;
+}
+
+
 #ifdef AMREX_USE_MPI
     template <> MPI_Datatype Mpi_typemap<RealVect>::type();
     template <> MPI_Datatype Mpi_typemap<IntVect>::type();

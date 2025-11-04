@@ -214,7 +214,7 @@ private:
     Vector<std::pair<Real,std::unique_ptr<MF>>> m_cf_crse_data;
     std::unique_ptr<MF> m_cf_crse_data_tmp;
     std::unique_ptr<MF> m_cf_fine_data;
-    Real m_dt_coarse = std::numeric_limits<Real>::lowest();
+    Real m_dt_coarse =  std::numeric_limits<Real>::lowest();
 
     FabArrayBase::FPinfo const& getFPinfo ();
 };
@@ -420,7 +420,7 @@ void FillPatcher<MF>::storeRKCoarseData (Real /*time*/, Real dt, MF const& S_old
     auto const& fpc = getFPinfo();
 
     for (auto& tmf : m_cf_crse_data) {
-        tmf.first = std::numeric_limits<Real>::lowest(); // because we don't need it
+        tmf.first =  std::numeric_limits<Real>::lowest(); // because we don't need it
         tmf.second = std::make_unique<MF>(detail::make_mf_crse_patch<MF>(fpc, m_ncomp));
     }
     m_cf_crse_data[0].second->ParallelCopy(S_old, m_cgeom.periodicity());

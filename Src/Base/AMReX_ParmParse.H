@@ -876,6 +876,31 @@ public:
                   int                 num_val = ALL) const;
     //! Add a key 'name' with vector of values 'ref' to the end of the PP table.
     void addarr (std::string_view name, const std::vector<float>& ref);
+
+    void getktharr (std::string_view    name,
+                    int                 k,
+                    std::vector<MockReal>& ref,
+                    int                 start_ix = FIRST,
+                    int                 num_val = ALL) const;
+    //! Same as getktharr() but searches for last occurrence of name.
+    void getarr (std::string_view    name,
+                 std::vector<MockReal>& ref,
+                 int                 start_ix = FIRST,
+                 int                 num_val = ALL) const;
+    //! queryktharr() is to querykth() as getktharr() is to getkth().
+    int queryktharr (std::string_view    name,
+                     int                 k,
+                     std::vector<MockReal>& ref,
+                     int                 start_ix = FIRST,
+                     int                 num_val = ALL) const;
+    //! Same as queryktharr() but searches for last occurrence of name.
+    int queryarr (std::string_view    name,
+                  std::vector<MockReal>& ref,
+                  int                 start_ix = FIRST,
+                  int                 num_val = ALL) const;
+    //! Add a key 'name' with vector of values 'ref' to the end of the PP table.
+    void addarr (std::string_view name, const std::vector<MockReal>& ref);
+
     /**
     * \brief Gets an std::vector\<double\> of num_val values from kth occurrence of
     * given name.  If successful, the values are converted to a double
@@ -1750,7 +1775,8 @@ public:
             amrex::IntVect*,
             amrex::Box*,
             float*,
-            double*
+            double*,
+            MockReal*
         > m_typehint = static_cast<std::string*>(nullptr);
     };
     using Table = std::unordered_map<std::string, PP_entry>;

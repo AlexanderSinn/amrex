@@ -22,7 +22,7 @@ void interp_face_reg (int i, int j, IntVect const& rr, Array4<Real> const& fine,
                 Real df = Real(2.0) * (crse(ic,jc+1,0,n) - crse(ic,jc  ,0,n));
                 Real db = Real(2.0) * (crse(ic,jc  ,0,n) - crse(ic,jc-1,0,n));
                 Real sy = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sy = std::copysign(Real(1.),dc)*amrex::min(sy,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfy = amrex::min(sfy, sy / dc);
@@ -46,7 +46,7 @@ void interp_face_reg (int i, int j, IntVect const& rr, Array4<Real> const& fine,
                 Real df = Real(2.0) * (crse(ic+1,jc,0,n) - crse(ic  ,jc,0,n));
                 Real db = Real(2.0) * (crse(ic  ,jc,0,n) - crse(ic-1,jc,0,n));
                 Real sx = (df*db >= Real(0.0)) ?
-                    amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+                    Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
                 sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
                 if (dc != Real(0.0)) {
                     sfx = amrex::min(sfx, sx / dc);

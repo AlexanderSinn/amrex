@@ -122,7 +122,7 @@ CNS::computeInitialDt (int                    finest_level,
         return;
     }
 
-    Real dt_0 = std::numeric_limits<Real>::max();
+    Real dt_0 =  std::numeric_limits<Real>::max();
     int n_factor = 1;
     for (int i = 0; i <= finest_level; i++)
     {
@@ -197,7 +197,7 @@ CNS::computeNewDt (int                    finest_level,
     //
     // Find the minimum over all levels
     //
-    Real dt_0 = std::numeric_limits<Real>::max();
+    Real dt_0 =  std::numeric_limits<Real>::max();
     int n_factor = 1;
     for (int i = 0; i <= finest_level; i++)
     {

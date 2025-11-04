@@ -9,7 +9,7 @@
 using namespace amrex;
 
 struct ErrZone {
-    Real max_abs_err = std::numeric_limits<Real>::lowest();
+    Real max_abs_err =  std::numeric_limits<Real>::lowest();
     int level;
     int grid_index;
     IntVect cell;
@@ -315,13 +315,13 @@ int main_main()
                 Real aerr = 0., rerr = 0.;
                 if (aerror[icomp_a] > 0.) {
                     aerr = std::min(
-                        std::max(aerror[icomp_a], std::numeric_limits<Real>::min()),
-                        std::numeric_limits<Real>::max());
+                        std::max(aerror[icomp_a],  std::numeric_limits<Real>::min()),
+                         std::numeric_limits<Real>::max());
                 }
                 if (rerror[icomp_a] > 0.) {
                     rerr = std::min(
-                        std::max(rerror[icomp_a], std::numeric_limits<Real>::min()),
-                        std::numeric_limits<Real>::max());
+                        std::max(rerror[icomp_a],  std::numeric_limits<Real>::min()),
+                         std::numeric_limits<Real>::max());
                 }
                 amrex::Print() << " " << std::setw(24) << std::left << names_a[icomp_a]
                                << std::right

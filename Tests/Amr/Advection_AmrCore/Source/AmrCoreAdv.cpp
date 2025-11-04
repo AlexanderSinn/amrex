@@ -827,7 +827,7 @@ AmrCoreAdv::EstTimeStep (int lev, Real time)
 {
     BL_PROFILE("AmrCoreAdv::EstTimeStep()");
 
-    Real dt_est = std::numeric_limits<Real>::max();
+    Real dt_est =  std::numeric_limits<Real>::max();
 
     const Real* dx  =  geom[lev].CellSize();
 

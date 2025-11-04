@@ -7,6 +7,7 @@
 #include <iostream>
 #include <utility>
 #include <type_traits>
+#include <limits>
 
 #ifdef BL_USE_FLOAT
 #  undef BL_USE_DOUBLE
@@ -50,13 +51,12 @@
 */
 
 #ifdef BL_USE_FLOAT
-typedef float amrex_real; // NOLINT(modernize-use-using)
+
 // We need to define these to get around a CUDA 9.2 bug that breaks std::numeric_limits
 #define AMREX_REAL_MIN     FLT_MIN
 #define AMREX_REAL_MAX     FLT_MAX
 #define AMREX_REAL_LOWEST (-FLT_MAX)
 #else
-typedef double amrex_real; // NOLINT(modernize-use-using)
 #define AMREX_REAL_MIN     DBL_MIN
 #define AMREX_REAL_MAX     DBL_MAX
 #define AMREX_REAL_LOWEST (-DBL_MAX)
@@ -85,15 +85,31 @@ namespace amrex {
         constexpr MockReal (const MockReal&) = default;
         constexpr MockReal& operator= (const MockReal&) = default;
 
-        constexpr MockReal (double a) : val{a} {}
-        constexpr MockReal (float a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (int a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (long a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (long long a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (unsigned int a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (unsigned long long a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (bool a) : val{static_cast<double>(a)} {}
-        constexpr MockReal (long double a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (double a) : val{a} {check_val();}
+        constexpr MockReal (float a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (long double a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (int a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (long a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (long long a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (unsigned int a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (unsigned long a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (unsigned long long a) : val{static_cast<double>(a)} {check_val();}
+        constexpr MockReal (bool a) : val{static_cast<double>(a)} {check_val();}
+
+        static constexpr MockReal lowest(){ return -FLT_MAX; };
+        static constexpr MockReal max(){ return FLT_MAX; };
+        static constexpr MockReal min(){ return FLT_MIN; };
+        static constexpr MockReal epsilon(){ return FLT_EPSILON; };
+
+        constexpr void check_val() const {
+            double a = val >= 0. ? val : -val;
+            if (a != 0 &&
+                a != double(FLT_MAX) &&
+                a != double(FLT_MIN) &&
+                (a > 3.e38 || a < 2.e-38)) {
+                std::cout << "value " << a << " is out of bounds" << std::endl;
+            }
+        }
 
         constexpr operator double () {
             return val;
@@ -105,22 +121,30 @@ namespace amrex {
 
         constexpr MockReal& operator+= (const MockReal& a) {
             val += a.val;
+            check_val();
             return *this;
         }
 
         constexpr MockReal& operator-= (const MockReal& a) {
             val -= a.val;
+            check_val();
             return *this;
         }
 
         constexpr MockReal& operator*= (const MockReal& a) {
             val *= a.val;
+            check_val();
             return *this;
         }
 
         constexpr MockReal& operator/= (const MockReal& a) {
             val /= a.val;
+            check_val();
             return *this;
+        }
+
+        constexpr MockReal operator- () const {
+            return MockReal{-val};
         }
 
         TEMPLATE_TWO_TYPE
@@ -250,11 +274,18 @@ inline namespace literals {
     /// @}
 } // namespace literals
 } // namespace amrex
+
+
+template<>
+struct std::numeric_limits<amrex::MockReal> : std::numeric_limits<float> {};
+
 #endif
 
 #ifdef AMREX_SINGLE_PRECISION_PARTICLES
+typedef amrex::MockReal amrex_real; // NOLINT(modernize-use-using)
 typedef amrex::MockReal amrex_particle_real; // NOLINT(modernize-use-using)
 #else
+typedef amrex::MockReal amrex_real; // NOLINT(modernize-use-using)
 typedef amrex::MockReal amrex_particle_real; // NOLINT(modernize-use-using)
 #endif
 

@@ -599,7 +599,7 @@ private:
     Vector< Vector<MultiFabId> > m_mfid;     // [level][oldnew]
     Interpolater*              m_map = nullptr;
     std::map<int,Box>          m_ba;
-    Real                       m_time = std::numeric_limits<Real>::lowest();
+    Real                       m_time =  std::numeric_limits<Real>::lowest();
     int                        m_growsize = std::numeric_limits<int>::lowest();
     int                        m_index = -1;
     int                        m_scomp = -1;

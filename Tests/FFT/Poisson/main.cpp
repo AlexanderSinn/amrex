@@ -188,7 +188,7 @@ int main (int argc, char* argv[])
 
             MultiFab rhs(ba,dm,1,0);
             MultiFab soln(ba,dm,1,1);
-            soln.setVal(std::numeric_limits<Real>::max());
+            soln.setVal( std::numeric_limits<Real>::max());
             make_rhs(rhs, geom, fft_bc);
 
             FFT::Poisson fft_poisson(geom, fft_bc);
@@ -226,7 +226,7 @@ int main (int argc, char* argv[])
 
             MultiFab rhs(ba,dm,1,0);
             MultiFab soln(ba,dm,1,1);
-            soln.setVal(std::numeric_limits<Real>::max());
+            soln.setVal( std::numeric_limits<Real>::max());
             make_rhs(rhs, geom, fft_bc);
 
             Gpu::DeviceVector<Real> dz(n_cell_z, geom.CellSize(2));

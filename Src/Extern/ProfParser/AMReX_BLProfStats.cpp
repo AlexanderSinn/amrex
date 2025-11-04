@@ -184,8 +184,8 @@ bool BLProfStats::RemovePiece(std::list<TimeRange> &removeFromHere,
 BLProfStats::BLProfStats() {
   maxRNumber = -1;
   currentProc = -1;
-  minRegionTime =  std::numeric_limits<Real>::max();
-  maxRegionTime = -std::numeric_limits<Real>::max();
+  minRegionTime =   std::numeric_limits<Real>::max();
+  maxRegionTime = - std::numeric_limits<Real>::max();
   bDefaultInclude = true;
   currentDataBlock = 0;
 }

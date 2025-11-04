@@ -2337,7 +2337,7 @@ Amr::checkPointNow () noexcept
         // the counter, because we have indeed reached the next check_per interval
         // at this point.
 
-        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
+        const Real eps =  std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
         const Real next_chk_time = static_cast<Real>(num_per_old + 1) * check_per;
 
         if ((num_per_new == num_per_old) && std::abs(cumtime - next_chk_time) <= eps)
@@ -2384,7 +2384,7 @@ Amr::writePlotNow() noexcept
         // the counter, because we have indeed reached the next plot_per interval
         // at this point.
 
-        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
+        const Real eps =  std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
         const Real next_plot_time = static_cast<Real>(num_per_old + 1) * plot_per;
 
         if ((num_per_new == num_per_old) && std::abs(cumtime - next_plot_time) <= eps)
@@ -2457,7 +2457,7 @@ Amr::writeSmallPlotNow() noexcept
         // the counter, because we have indeed reached the next small_plot_per interval
         // at this point.
 
-        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
+        const Real eps =  std::numeric_limits<Real>::epsilon() * 10.0_rt * std::abs(cumtime);
         const Real next_plot_time = static_cast<Real>(num_per_old + 1) * small_plot_per;
 
         if ((num_per_new == num_per_old) && std::abs(cumtime - next_plot_time) <= eps)

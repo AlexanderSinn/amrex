@@ -275,7 +275,7 @@ void FillRandom (Real* p, Long N)
     event.wait();
 
 #else
-    std::uniform_real_distribution<Real> distribution(Real(0.0), Real(1.0));
+    std::uniform_real_distribution<double> distribution(Real(0.0), Real(1.0));
     auto& gen = generators[OpenMP::get_thread_num()];
     for (Long i = 0; i < N; ++i) {
         p[i] = distribution(gen);
@@ -322,7 +322,7 @@ void FillRandomNormal (Real* p, Long N, Real mean, Real stddev)
 
 #else
 
-    std::normal_distribution<Real> distribution(mean, stddev);
+    std::normal_distribution<double> distribution(mean, stddev);
     auto& gen = generators[OpenMP::get_thread_num()];
     for (Long i = 0; i < N; ++i) {
         p[i] = distribution(gen);

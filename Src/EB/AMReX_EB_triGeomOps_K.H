@@ -212,7 +212,7 @@ namespace amrex::tri_geom_ops
             //we are assuming there are no intersections initially
             int no_intersections=1;
 
-            Real eps = std::numeric_limits<Real>::epsilon();
+            Real eps =  std::numeric_limits<Real>::epsilon();
 
             //coplanar (S1,S2,S3 = 0)
             if(std::abs(S1) < eps && std::abs(S2) < eps && std::abs(S3) < eps)

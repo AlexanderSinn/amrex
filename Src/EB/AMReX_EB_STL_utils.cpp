@@ -55,7 +55,7 @@ namespace {
     Real sign (Real x1, Real y1, Real x2, Real y2, Real x3, Real y3)
     {
         Real cp = (x2-x1)*(y3-y2) - (x3-x2)*(y2-y1);
-        if (std::abs(cp) < std::numeric_limits<Real>::epsilon()) {
+        if (std::abs(cp) <  std::numeric_limits<Real>::epsilon()) {
             return 0._rt;
         } else {
             return std::copysign(1.0_rt, cp);
@@ -97,9 +97,9 @@ namespace {
             Real s2 = sign(v2.y, v2.z, v3.y, v3.z, y, z);
             Real s3 = sign(v3.y, v3.z, v1.y, v1.z, y, z);
             if (s1 == 0._rt || s2 == 0._rt || s3 == 0._rt || (s1 == s2 && s2 == s3)) {
-                if (std::abs(x1-x) < std::numeric_limits<Real>::epsilon()) {
+                if (std::abs(x1-x) <  std::numeric_limits<Real>::epsilon()) {
                     return std::make_pair(true,x1);
-                } else if (std::abs(x2-x) < std::numeric_limits<Real>::epsilon()) {
+                } else if (std::abs(x2-x) <  std::numeric_limits<Real>::epsilon()) {
                     return std::make_pair(true,x2);
                 } else if (x>x1 && x<x2) {
                     return std::make_pair(true,x);
@@ -364,7 +364,7 @@ namespace {
         nodes_to_do.push(0);
         nchildren_done.push(0);
 
-        Real d = std::numeric_limits<Real>::max();
+        Real d =  std::numeric_limits<Real>::max();
 
         while (!nodes_to_do.empty()) {
             auto const& node = root[nodes_to_do.top()];
@@ -645,27 +645,27 @@ STLtools::prepare (Gpu::PinnedVector<Triangle> a_tri_pts)
         // Now we need to find out where the normal vector will intersect
         // with the bounding box defined by m_ptmin and m_ptmax.
         Real Lx, Ly, Lz;
-        constexpr Real eps = std::numeric_limits<Real>::epsilon();
+        constexpr Real eps =  std::numeric_limits<Real>::epsilon();
         if (norm.x > eps) {
             Lx = (m_ptmax.x-cent0.x) / norm.x;
         } else if (norm.x < -eps) {
             Lx = (m_ptmin.x-cent0.x) / norm.x;
         } else {
-            Lx = std::numeric_limits<Real>::max();
+            Lx =  std::numeric_limits<Real>::max();
         }
         if (norm.y > eps) {
             Ly = (m_ptmax.y-cent0.y) / norm.y;
         } else if (norm.y < -eps) {
             Ly = (m_ptmin.y-cent0.y) / norm.y;
         } else {
-            Ly = std::numeric_limits<Real>::max();
+            Ly =  std::numeric_limits<Real>::max();
         }
         if (norm.z > eps) {
             Lz = (m_ptmax.z-cent0.z) / norm.z;
         } else if (norm.z < -eps) {
             Lz = (m_ptmin.z-cent0.z) / norm.z;
         } else {
-            Lz = std::numeric_limits<Real>::max();
+            Lz =  std::numeric_limits<Real>::max();
         }
         Real Lp = std::min({Lx,Ly,Lz});
         if (norm.x > eps) {
@@ -673,21 +673,21 @@ STLtools::prepare (Gpu::PinnedVector<Triangle> a_tri_pts)
         } else if (norm.x < -eps) {
             Lx = (m_ptmax.x-cent0.x) / norm.x;
         } else {
-            Lx = std::numeric_limits<Real>::lowest();
+            Lx =  std::numeric_limits<Real>::lowest();
         }
         if (norm.y > eps) {
             Ly = (m_ptmin.y-cent0.y) / norm.y;
         } else if (norm.y < -eps) {
             Ly = (m_ptmax.y-cent0.y) / norm.y;
         } else {
-            Ly = std::numeric_limits<Real>::lowest();
+            Ly =  std::numeric_limits<Real>::lowest();
         }
         if (norm.z > eps) {
             Lz = (m_ptmin.z-cent0.z) / norm.z;
         } else if (norm.z < -eps) {
             Lz = (m_ptmax.z-cent0.z) / norm.z;
         } else {
-            Lz = std::numeric_limits<Real>::lowest();
+            Lz =  std::numeric_limits<Real>::lowest();
         }
         if (std::abs(norm.x) < 1.e-5) {
             norm.x = std::copysign(Real(1.e-5), norm.x);
@@ -767,8 +767,8 @@ STLtools::build_bvh (Triangle* begin, Triangle* end, Gpu::PinnedVector<Node>& bv
         return;
     }
 
-    RealVect centmin(std::numeric_limits<Real>::max());
-    RealVect centmax(std::numeric_limits<Real>::lowest());
+    RealVect centmin( std::numeric_limits<Real>::max());
+    RealVect centmax( std::numeric_limits<Real>::lowest());
     for (auto* p = begin; p != end; ++p) {
         RealVect cent(AMREX_D_DECL(p->cent(0), p->cent(1), p->cent(2)));
         centmin.min(cent);
@@ -1365,7 +1365,7 @@ STLtools::fillSignedDistance (MultiFab& mf, IntVect const& nghost, Geometry cons
             XDim3 coords = {plo[0]+(static_cast<Real>(i)+offset[0])*dx[0],
                             plo[1]+(static_cast<Real>(j)+offset[1])*dx[1],
                             plo[2]+(static_cast<Real>(k)+offset[2])*dx[2]};
-            auto d2 = std::numeric_limits<Real>::max();
+            auto d2 =  std::numeric_limits<Real>::max();
             for (int tr = 0; tr < num_triangles; ++tr) {
                 auto tmp = pt_tri_min_d2(coords, tri_pts[tr]);
                 d2 = std::min(d2, tmp);

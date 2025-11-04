@@ -129,7 +129,7 @@ private:
     Vector<Vector<std::unique_ptr<MultiFab>>> m_sigma_mf;
     bool m_has_sigma_mf = false;
     bool m_needs_update = true;
-    Real m_s_phi_eb = std::numeric_limits<Real>::lowest();
+    Real m_s_phi_eb =  std::numeric_limits<Real>::lowest();
     Vector<MultiFab> m_phi_eb;
     int m_rz = false;
     Real m_rz_alpha = 0._rt;

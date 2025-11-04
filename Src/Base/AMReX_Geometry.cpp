@@ -590,7 +590,7 @@ Geometry::computeRoundoffDomain ()
             // rlo     is inside
             int iters = 0;
             auto epsilon = std::numeric_limits<ParticleReal>::epsilon()
-                * std::max(ParticleReal(CellSize(idim)),std::abs(rlo))
+                * amrex::max(ParticleReal(CellSize(idim)),std::abs(rlo))
                 * ParticleReal(2.0);
             auto rlo_minus = rlo-epsilon;
             bool rlo_minus_is_inside = is_inside(rlo_minus);
@@ -602,7 +602,7 @@ Geometry::computeRoundoffDomain ()
                 if (is_inside(rmid)) {
                     rlo = rmid;
                     epsilon = std::numeric_limits<ParticleReal>::epsilon()
-                        * std::max(ParticleReal(CellSize(idim)),std::abs(rlo))
+                        * amrex::max(ParticleReal(CellSize(idim)),std::abs(rlo))
                         * ParticleReal(2.0);
                     rlo_minus = rlo - epsilon;
                     rlo_minus_is_inside = is_inside(rlo_minus);
@@ -656,7 +656,7 @@ Geometry::computeRoundoffDomain ()
             // rhi_out is outside
             int iters = 0;
             auto epsilon = std::numeric_limits<ParticleReal>::epsilon()
-                * std::max(ParticleReal(CellSize(idim)),std::abs(rhi))
+                * amrex::max(ParticleReal(CellSize(idim)),std::abs(rhi))
                 * ParticleReal(2.0);
             auto rhi_plus = rhi+epsilon;
             bool rhi_plus_is_inside = is_inside(rhi_plus);
@@ -668,7 +668,7 @@ Geometry::computeRoundoffDomain ()
                 if (is_inside(rmid)) {
                     rhi = rmid;
                     epsilon = std::numeric_limits<ParticleReal>::epsilon()
-                        * std::max(ParticleReal(CellSize(idim)),std::abs(rhi))
+                        * amrex::max(ParticleReal(CellSize(idim)),std::abs(rhi))
                         * ParticleReal(2.0);
                     rhi_plus = rhi + epsilon;
                     rhi_plus_is_inside = is_inside(rhi_plus);

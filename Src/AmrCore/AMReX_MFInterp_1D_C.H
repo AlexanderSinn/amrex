@@ -17,7 +17,7 @@ void mf_cell_cons_lin_interp_limit_minmax_llslope (int i, int, int, Array4<Real>
         Real dc = mf_compute_slopes_x(i, 0, 0, u, nu, domain, bc[ns]);
         Real df = Real(2.0) * (u(i+1,0,0,nu) - u(i  ,0,0,nu));
         Real db = Real(2.0) * (u(i  ,0,0,nu) - u(i-1,0,0,nu));
-        Real sx = (df*db >= Real(0.0)) ? amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+        Real sx = (df*db >= Real(0.0)) ? Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
         sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
         slope(i,0,0,ns) = dc;
 
@@ -49,7 +49,7 @@ void mf_cell_cons_lin_interp_llslope (int i, int, int, Array4<Real> const& slope
         Real dc = mf_compute_slopes_x(i, 0, 0, u, nu, domain, bc[ns]);
         Real df = Real(2.0) * (u(i+1,0,0,nu) - u(i  ,0,0,nu));
         Real db = Real(2.0) * (u(i  ,0,0,nu) - u(i-1,0,0,nu));
-        Real sx = (df*db >= Real(0.0)) ? amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+        Real sx = (df*db >= Real(0.0)) ? Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
         sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
         if (dc != Real(0.0)) {
             sfx = amrex::min(sfx, sx / dc);
@@ -75,7 +75,7 @@ void mf_cell_cons_lin_interp_mcslope (int i, int /*j*/, int /*k*/, int ns,
     Real dc = mf_compute_slopes_x(i, 0, 0, u, nu, domain, bc[ns]);
     Real df = Real(2.0) * (u(i+1,0,0,nu) - u(i  ,0,0,nu));
     Real db = Real(2.0) * (u(i  ,0,0,nu) - u(i-1,0,0,nu));
-    Real sx = (df*db >= Real(0.0)) ? amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+    Real sx = (df*db >= Real(0.0)) ? Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
     sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
 
     Real alpha = Real(1.0);
@@ -122,7 +122,7 @@ void mf_cell_cons_lin_interp_mcslope_sph (int i, int ns, Array4<Real> const& slo
     Real dc = mf_compute_slopes_x(i, 0, 0, u, nu, domain, bc[ns]);
     Real df = Real(2.0) * (u(i+1,0,0,nu) - u(i  ,0,0,nu));
     Real db = Real(2.0) * (u(i  ,0,0,nu) - u(i-1,0,0,nu));
-    Real sx = (df*db >= Real(0.0)) ? amrex::min(std::abs(df),std::abs(db)) : Real(0.);
+    Real sx = (df*db >= Real(0.0)) ? Real(amrex::min(std::abs(df),std::abs(db))) : Real(0.);
     sx = std::copysign(Real(1.),dc)*amrex::min(sx,std::abs(dc));
 
     Real alpha = Real(1.0);

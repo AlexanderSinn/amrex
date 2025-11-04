@@ -112,12 +112,12 @@ ChkptFile::read_from_chkpt_file (BoxArray& cut_grids, BoxArray& covered_grids,
                                  const IntVect& ngrow_finest, bool extend_domain_face,
                                  int max_grid_size) const
 {
-    Real prob_lo[] = {AMREX_D_DECL(std::numeric_limits<Real>::max(),
-                                   std::numeric_limits<Real>::max(),
-                                   std::numeric_limits<Real>::max())};
-    Real prob_hi[] = {AMREX_D_DECL(std::numeric_limits<Real>::lowest(),
-                                   std::numeric_limits<Real>::lowest(),
-                                   std::numeric_limits<Real>::lowest())};
+    Real prob_lo[] = {AMREX_D_DECL( std::numeric_limits<Real>::max(),
+                                    std::numeric_limits<Real>::max(),
+                                    std::numeric_limits<Real>::max())};
+    Real prob_hi[] = {AMREX_D_DECL( std::numeric_limits<Real>::lowest(),
+                                    std::numeric_limits<Real>::lowest(),
+                                    std::numeric_limits<Real>::lowest())};
 
     std::string File(m_restart_file + "/Header");
 
@@ -166,9 +166,9 @@ ChkptFile::read_from_chkpt_file (BoxArray& cut_grids, BoxArray& covered_grids,
     }
 
     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(std::abs(prob_lo[idim] - geom.ProbLo()[idim]) < std::numeric_limits<Real>::epsilon(),
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(std::abs(prob_lo[idim] - geom.ProbLo()[idim]) <  std::numeric_limits<Real>::epsilon(),
                                          "EB2::ChkptFile cannot read from a different problem domain");
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(std::abs(prob_hi[idim] - geom.ProbHi()[idim]) < std::numeric_limits<Real>::epsilon(),
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(std::abs(prob_hi[idim] - geom.ProbHi()[idim]) <  std::numeric_limits<Real>::epsilon(),
                                          "EB2::ChkptFile cannot read from a different problem domain");
     }
 

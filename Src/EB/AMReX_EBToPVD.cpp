@@ -351,7 +351,7 @@ void EBToPVD::calc_alpha(std::array<Real,12>& alpha,
    std::fill(alpha.begin(), alpha.end(), 10.0);
 
    // Ray-xAxis intersection
-   if(std::abs(n0[0]) > std::numeric_limits<Real>::epsilon()) {
+   if(std::abs(n0[0]) >  std::numeric_limits<Real>::epsilon()) {
       alpha[0]  = (p - dot_product(n0,vertex[0]))/(n0[0]*dx[0]);
       alpha[2]  = (p - dot_product(n0,vertex[2]))/(n0[0]*dx[0]);
       alpha[8]  = (p - dot_product(n0,vertex[4]))/(n0[0]*dx[0]);
@@ -359,7 +359,7 @@ void EBToPVD::calc_alpha(std::array<Real,12>& alpha,
    }
 
    // Ray-yAxis intersection
-   if(std::abs(n0[1]) > std::numeric_limits<Real>::epsilon()) {
+   if(std::abs(n0[1]) >  std::numeric_limits<Real>::epsilon()) {
       alpha[1]  = (p - dot_product(n0,vertex[1]))/(n0[1]*dx[1]);
       alpha[3]  = (p - dot_product(n0,vertex[0]))/(n0[1]*dx[1]);
       alpha[9]  = (p - dot_product(n0,vertex[5]))/(n0[1]*dx[1]);
@@ -367,7 +367,7 @@ void EBToPVD::calc_alpha(std::array<Real,12>& alpha,
    }
 
    // Ray-zAxis intersection
-   if(std::abs(n0[2]) > std::numeric_limits<Real>::epsilon()) {
+   if(std::abs(n0[2]) >  std::numeric_limits<Real>::epsilon()) {
       alpha[4] = (p - dot_product(n0,vertex[0]))/(n0[2]*dx[2]);
       alpha[5] = (p - dot_product(n0,vertex[1]))/(n0[2]*dx[2]);
       alpha[6] = (p - dot_product(n0,vertex[3]))/(n0[2]*dx[2]);

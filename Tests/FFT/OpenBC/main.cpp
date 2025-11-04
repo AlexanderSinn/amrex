@@ -52,7 +52,7 @@ int main (int argc, char* argv[])
             int ng = ixtype.cellCentered() ? 1 : 0;
             MultiFab rho(iba,dm,1,0);
             MultiFab phi(iba,dm,1,ng);
-            phi.setVal(std::numeric_limits<Real>::max());
+            phi.setVal( std::numeric_limits<Real>::max());
 
             auto const& rhoma = rho.arrays();
 
