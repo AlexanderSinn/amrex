@@ -447,98 +447,98 @@ while ( false )
 
     //! Real sum reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T& rvar);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T* rvar, int cnt);
 
     // Having this for backward compatibility
     void ReduceRealSum (Vector<std::reference_wrapper<Real> > const& rvar);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const& rvar);
 
     //! Real sum reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T& rvar, int cpu);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T* rvar, int cnt, int cpu);
 
     // Having this for backward compatibility
     void ReduceRealSum (Vector<std::reference_wrapper<Real> > const& rvar, int cpu);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const& rvar, int cpu);
 
     //! Real max reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T& rvar);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T* rvar, int cnt);
 
     // Having this for backward compatibility
     void ReduceRealMax (Vector<std::reference_wrapper<Real> > const& rvar);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const& rvar);
 
     //! Real max reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T& rvar, int cpu);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T* rvar, int cnt, int cpu);
 
     // Having this for backward compatibility
     void ReduceRealMax (Vector<std::reference_wrapper<Real> > const& rvar, int cpu);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const& rvar, int cpu);
 
     //! Real min reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T& rvar);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T* rvar, int cnt);
 
     // Having this for backward compatibility
     void ReduceRealMin (Vector<std::reference_wrapper<Real> > const& rvar);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const& rvar);
 
     //! Real min reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T& rvar, int cpu);
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T* rvar, int cnt, int cpu);
 
     // Having this for backward compatibility
     void ReduceRealMin (Vector<std::reference_wrapper<Real> > const& rvar, int cpu);
     //
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const& rvar, int cpu);
 
     //! Integer sum reduction.
@@ -1271,19 +1271,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real sum reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T& rvar) {
         detail::DoAllReduce<T>(&rvar,MPI_SUM,1);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T* rvar, int cnt) {
         detail::DoAllReduce<T>(rvar,MPI_SUM,cnt);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const& rvar)
     {
         int cnt = rvar.size();
@@ -1296,19 +1296,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real sum reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T& rvar, int cpu) {
         detail::DoReduce<T>(&rvar,MPI_SUM,1,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T* rvar, int cnt, int cpu) {
         detail::DoReduce<T>(rvar,MPI_SUM,cnt,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const& rvar, int cpu)
     {
         int cnt = rvar.size();
@@ -1321,19 +1321,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real max reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T& rvar) {
         detail::DoAllReduce<T>(&rvar,MPI_MAX,1);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T* rvar, int cnt) {
         detail::DoAllReduce<T>(rvar,MPI_MAX,cnt);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const& rvar)
     {
         int cnt = rvar.size();
@@ -1346,19 +1346,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real max reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T& rvar, int cpu) {
         detail::DoReduce<T>(&rvar,MPI_MAX,1,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T* rvar, int cnt, int cpu) {
         detail::DoReduce<T>(rvar,MPI_MAX,cnt,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const& rvar, int cpu)
     {
         int cnt = rvar.size();
@@ -1371,19 +1371,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real min reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T& rvar) {
         detail::DoAllReduce<T>(&rvar,MPI_MIN,1);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T* rvar, int cnt) {
         detail::DoAllReduce<T>(rvar,MPI_MIN,cnt);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const& rvar)
     {
         int cnt = rvar.size();
@@ -1396,19 +1396,19 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real min reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T& rvar, int cpu) {
         detail::DoReduce<T>(&rvar,MPI_MIN,1,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T* rvar, int cnt, int cpu) {
         detail::DoReduce<T>(rvar,MPI_MIN,cnt,cpu);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const& rvar, int cpu)
     {
         int cnt = rvar.size();
@@ -1423,80 +1423,80 @@ void DoReduce (T* r, MPI_Op op, int cnt, int cpu)
 
     //! Real sum reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T& ) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T*, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const&) {}
 
     //! Real sum reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T&, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (T*, int, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealSum (Vector<std::reference_wrapper<T> > const&, int) {}
 
     //! Real max reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T&) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T*, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const&) {}
 
     //! Real max reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T&, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (T*, int, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMax (Vector<std::reference_wrapper<T> > const&, int) {}
 
     //! Real min reduction.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T&) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T*, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const&) {}
 
     //! Real min reduction to specified cpu.
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T&, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (T*, int, int) {}
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>>
     ReduceRealMin (Vector<std::reference_wrapper<T> > const&, int) {}
 
 #endif

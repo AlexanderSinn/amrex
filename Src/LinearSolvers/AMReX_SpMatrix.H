@@ -137,7 +137,7 @@ SpMatrix<T,Allocator>::SpMatrix (AlgPartition partition, int nnz)
       m_row_begin(m_partition[ParallelDescriptor::MyProc()]),
       m_row_end(m_partition[ParallelDescriptor::MyProc()+1])
 {
-    static_assert(std::is_floating_point<T>::value, "SpMatrix is for floating point type only");
+    static_assert(amrex::IsFloatingPoint<T>::value, "SpMatrix is for floating point type only");
     define_doit(nnz);
 }
 

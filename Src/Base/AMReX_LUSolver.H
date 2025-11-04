@@ -103,7 +103,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void LUSolver<N,T>::define_innard ()
 {
     static_assert(N > 1);
-    static_assert(std::is_floating_point_v<T>);
+    static_assert(amrex::IsFloatingPoint_v<T>);
 
     for (int i = 0; i < N; ++i) { m_piv(i) = i; }
     m_npivs = 0;

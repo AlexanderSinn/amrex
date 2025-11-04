@@ -115,14 +115,14 @@ InitRandom (ULong cpu_seed, int nprocs, ULong gpu_seed)
 
 Real RandomNormal (Real mean, Real stddev)
 {
-    std::normal_distribution<Real> distribution(mean, stddev);
+    std::normal_distribution<double> distribution(mean, stddev);
     int tid = OpenMP::get_thread_num();
     return distribution(generators[tid]);
 }
 
 Real Random ()
 {
-    std::uniform_real_distribution<Real> distribution(0.0, 1.0);
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
     int tid = OpenMP::get_thread_num();
     return distribution(generators[tid]);
 }
@@ -136,7 +136,7 @@ unsigned int RandomPoisson (Real lambda)
 
 Real RandomGamma (Real alpha, Real beta)
 {
-    std::gamma_distribution<Real> distribution(alpha, beta);
+    std::gamma_distribution<double> distribution(alpha, beta);
     int tid = OpenMP::get_thread_num();
     return distribution(generators[tid]);
 }

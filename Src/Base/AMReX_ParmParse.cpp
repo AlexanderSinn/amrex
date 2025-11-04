@@ -92,7 +92,7 @@ isT (const std::string& str, T& val)
     return true;
 }
 
-template <typename T, std::enable_if_t<std::is_floating_point_v<T>,int> = 0>
+template <typename T, std::enable_if_t<amrex::IsFloatingPoint_v<T>,int> = 0>
 bool
 is_floating_point (const std::string& str, T& val)
 {

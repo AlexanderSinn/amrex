@@ -522,6 +522,21 @@ public:
     void get (std::string_view name,
               float&           ref,
               int              ival = FIRST) const;
+
+    void getkth (std::string_view name,
+                 int              k,
+                 MockReal&           ref,
+                 int              ival = FIRST) const
+    {
+        getkth(name, k, ref.val, ival);
+    }
+    //! Same as getkth() but searches for the last occurrence of name.
+    void get (std::string_view name,
+              MockReal&           ref,
+              int              ival = FIRST) const
+    {
+        get(name, ref.val, ival);
+    }
     /**
     * \brief Similar to getkth() but returns 0 if there is no kth occurrence
     * of name.  If successful, it returns 1 and stores the value in
@@ -533,12 +548,32 @@ public:
                   int              k,
                   float&           ref,
                   int              ival = FIRST) const;
+
+    int querykth (std::string_view name,
+                  int              k,
+                  MockReal&        ref,
+                  int              ival = FIRST) const
+    {
+        return this->querykth(name, k, ref.val, ival);
+    }
     //! Same as querykth() but searches for the last occurrence of name.
     int query (std::string_view name,
                float&           ref,
                int              ival = FIRST) const;
+
+    int query (std::string_view name,
+               MockReal&        ref,
+               int              ival = FIRST) const
+    {
+        return this->query(name, ref.val, ival);
+    }
     //! Add a key 'name' with value 'val' to the end of the PP table.
     void add (std::string_view name, float  val);
+
+    void add (std::string_view name, MockReal  val)
+    {
+        add(name, val.val);
+    }
     /**
     * \brief Get the ival'th value of kth occurrence of the requested name.
     * If successful, the value is converted to a double and stored
@@ -1141,6 +1176,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     int queryarrWithParser (std::string_view name, int nvals, std::vector<T>& ref) const
@@ -1163,6 +1199,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     int queryAddWithParser (std::string_view name, T& ref)
@@ -1183,6 +1220,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     void getWithParser (std::string_view name, T& ref) const
@@ -1202,6 +1240,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     void getarrWithParser (std::string_view name, int nvals, T* ptr) const
@@ -1221,6 +1260,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     void getarrWithParser (std::string_view name, int nvals, std::vector<T>& ref) const
@@ -1240,6 +1280,7 @@ public:
                                            std::is_same_v<T,int> ||
                                            std::is_same_v<T,long> ||
                                            std::is_same_v<T,long long> ||
+                                           std::is_same_v<T,Real> ||
                                            std::is_same_v<T,float> ||
                                            std::is_same_v<T,double>,int> = 0>
     T eval (std::string const& expr) const

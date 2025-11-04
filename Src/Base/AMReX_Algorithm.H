@@ -89,7 +89,7 @@ namespace amrex
     // Reference: https://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
     template <typename T>
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    std::enable_if_t<std::is_floating_point_v<T>,bool>
+    std::enable_if_t<amrex::IsFloatingPoint_v<T>,bool>
     almostEqual (T x, T y, int ulp = 2)
     {
         // the machine epsilon has to be scaled to the magnitude of the values used
@@ -100,7 +100,7 @@ namespace amrex
     }
 
     template <class T, class F,
-              std::enable_if_t<std::is_floating_point_v<T>,int>FOO = 0>
+              std::enable_if_t<amrex::IsFloatingPoint_v<T>,int>FOO = 0>
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     T bisect (T lo, T hi, F f, T tol=1e-12, int max_iter=100)
     {
@@ -211,8 +211,8 @@ namespace amrex
 
     template<typename ItType, typename ValType,
         std::enable_if_t<
-            std::is_floating_point_v<typename std::iterator_traits<ItType>::value_type> &&
-            std::is_floating_point_v<ValType>,
+            amrex::IsFloatingPoint_v<typename std::iterator_traits<ItType>::value_type> &&
+            amrex::IsFloatingPoint_v<ValType>,
         int> = 0>
     AMREX_GPU_HOST_DEVICE
     void linspace (ItType first, const ItType& last, const ValType& start, const ValType& stop)
@@ -229,8 +229,8 @@ namespace amrex
 
     template<typename ItType, typename ValType,
         std::enable_if_t<
-            std::is_floating_point_v<typename std::iterator_traits<ItType>::value_type> &&
-            std::is_floating_point_v<ValType>,
+            amrex::IsFloatingPoint_v<typename std::iterator_traits<ItType>::value_type> &&
+            amrex::IsFloatingPoint_v<ValType>,
         int> = 0>
     AMREX_GPU_HOST_DEVICE
     void logspace (ItType first, const ItType& last,

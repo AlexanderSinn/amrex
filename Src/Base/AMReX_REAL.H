@@ -4,6 +4,10 @@
 
 #include <AMReX_Extension.H>
 
+#include <iostream>
+#include <utility>
+#include <type_traits>
+
 #ifdef BL_USE_FLOAT
 #  undef BL_USE_DOUBLE
 #  undef BL_USE_FLOAT
@@ -58,14 +62,135 @@ typedef double amrex_real; // NOLINT(modernize-use-using)
 #define AMREX_REAL_LOWEST (-DBL_MAX)
 #endif
 
-#ifdef AMREX_SINGLE_PRECISION_PARTICLES
-typedef float amrex_particle_real; // NOLINT(modernize-use-using)
-#else
-typedef double amrex_particle_real; // NOLINT(modernize-use-using)
-#endif
-
 #ifdef __cplusplus
 namespace amrex {
+
+    #define TEMPLATE_TWO_TYPE  template<class T, class U, std::enable_if_t< \
+        ( \
+            std::is_same_v<T, MockReal> || std::is_same_v<U, MockReal> \
+        ) && ( \
+            std::is_same_v<T, MockReal> || std::is_same_v<T, double> || std::is_same_v<T, int> || \
+            std::is_same_v<T, float> || std::is_same_v<T, long long> || std::is_same_v<T, unsigned int> || \
+            std::is_same_v<T, unsigned long long> || std::is_same_v<T, bool> \
+        ) && ( \
+            std::is_same_v<U, MockReal> || std::is_same_v<U, double> || std::is_same_v<U, int> || \
+            std::is_same_v<U, float> || std::is_same_v<U, long long> || std::is_same_v<U, unsigned int> || \
+            std::is_same_v<U, unsigned long long> || std::is_same_v<U, bool> \
+        ), int> = 0>
+
+    struct MockReal {
+        double val = 0.;
+
+        constexpr MockReal() = default;
+        constexpr MockReal (const MockReal&) = default;
+        constexpr MockReal& operator= (const MockReal&) = default;
+
+        constexpr MockReal (double a) : val{a} {}
+        constexpr MockReal (float a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (int a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (long a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (long long a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (unsigned int a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (unsigned long long a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (bool a) : val{static_cast<double>(a)} {}
+        constexpr MockReal (long double a) : val{static_cast<double>(a)} {}
+
+        constexpr operator double () {
+            return val;
+        }
+
+        constexpr operator double () const {
+            return val;
+        }
+
+        constexpr MockReal& operator+= (const MockReal& a) {
+            val += a.val;
+            return *this;
+        }
+
+        constexpr MockReal& operator-= (const MockReal& a) {
+            val -= a.val;
+            return *this;
+        }
+
+        constexpr MockReal& operator*= (const MockReal& a) {
+            val *= a.val;
+            return *this;
+        }
+
+        constexpr MockReal& operator/= (const MockReal& a) {
+            val /= a.val;
+            return *this;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend MockReal operator+ (const T& a, const U& b) {
+            return MockReal{a}.val + MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend MockReal operator- (const T& a, const U& b) {
+            return MockReal{a}.val - MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend MockReal operator* (const T& a, const U& b) {
+            return MockReal{a}.val * MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend MockReal operator/ (const T& a, const U& b) {
+            return MockReal{a}.val / MockReal{b}.val;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const MockReal& a) {
+            return os << a.val;
+        }
+
+        friend std::istream& operator>>(std::istream& is, MockReal& a) {
+            return is >> a.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator== (const T& a, const U& b) {
+            return MockReal{a}.val == MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator!= (const T& a, const U& b) {
+            return MockReal{a}.val != MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator< (const T& a, const U& b) {
+            return MockReal{a}.val < MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator> (const T& a, const U& b) {
+            return MockReal{a}.val > MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator<= (const T& a, const U& b) {
+            return MockReal{a}.val <= MockReal{b}.val;
+        }
+
+        TEMPLATE_TWO_TYPE
+        constexpr friend bool operator>= (const T& a, const U& b) {
+            return MockReal{a}.val >= MockReal{b}.val;
+        }
+    };
+
+    template<class T>
+    struct IsFloatingPoint : std::is_floating_point<T> {};
+
+    template<>
+    struct IsFloatingPoint<MockReal> : std::true_type {};
+
+    template<class T>
+    constexpr bool IsFloatingPoint_v = IsFloatingPoint<MockReal>::value;
+
     /** Floating Point Type for Fields
      *
      * This is a floating point type used by default for fields such as
@@ -73,7 +198,7 @@ namespace amrex {
      * run double, single or experimental floating point precisions for field
      * computations and storage.
      */
-    using Real = amrex_real;
+    using Real = MockReal;
 
     /** Floating Point Type for Particles
      *
@@ -82,7 +207,7 @@ namespace amrex {
      * double, single or experimental floating point precisions for particle
      * computations and storage.
      */
-    using ParticleReal = amrex_particle_real;
+    using ParticleReal = MockReal;
 
 /** Floating point literals for AMReX precision.
  *
@@ -125,6 +250,12 @@ inline namespace literals {
     /// @}
 } // namespace literals
 } // namespace amrex
+#endif
+
+#ifdef AMREX_SINGLE_PRECISION_PARTICLES
+typedef amrex::MockReal amrex_particle_real; // NOLINT(modernize-use-using)
+#else
+typedef amrex::MockReal amrex_particle_real; // NOLINT(modernize-use-using)
 #endif
 
 #endif /* !BL_LANG_FORT */

@@ -24,7 +24,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 int pcg_solve (T* AMREX_RESTRICT x, T* AMREX_RESTRICT r,
                M const& mat, P const& precond, int maxiter, T rel_tol)
 {
-    static_assert(std::is_floating_point_v<T>);
+    static_assert(amrex::IsFloatingPoint_v<T>);
 
     T rnorm0 = 0;
     for (int i = 0; i < N; ++i) {

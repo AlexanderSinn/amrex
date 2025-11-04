@@ -111,7 +111,7 @@ AlgVector<T,Allocator>::AlgVector (Long global_size)
       m_end(m_partition[ParallelDescriptor::MyProc()+1]),
       m_data(m_end-m_begin)
 {
-    static_assert(std::is_floating_point<T>::value, "AlgVector is for floating point type only");
+    static_assert(amrex::IsFloatingPoint<T>::value, "AlgVector is for floating point type only");
 }
 
 template <typename T, typename Allocator>
@@ -121,7 +121,7 @@ AlgVector<T,Allocator>::AlgVector (AlgPartition partition)
       m_end(m_partition[ParallelDescriptor::MyProc()+1]),
       m_data(m_end-m_begin)
 {
-    static_assert(std::is_floating_point<T>::value, "AlgVector is for floating point type only");
+    static_assert(amrex::IsFloatingPoint<T>::value, "AlgVector is for floating point type only");
 }
 
 template <typename T, typename Allocator>

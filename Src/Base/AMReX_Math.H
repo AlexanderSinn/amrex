@@ -61,7 +61,7 @@ using std::isinf;
 #endif
 
 template <typename T>
-constexpr std::enable_if_t<std::is_floating_point_v<T>,T> pi ()
+constexpr std::enable_if_t<amrex::IsFloatingPoint_v<T>,T> pi ()
 {
     return T(3.1415926535897932384626433832795029L);
 }
