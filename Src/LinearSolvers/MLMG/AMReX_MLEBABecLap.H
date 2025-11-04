@@ -124,8 +124,8 @@ public:
     [[nodiscard]] std::unique_ptr<PETScABecLap> makePETSc () const override;
 #endif
 
-    Real m_a_scalar = std::numeric_limits<Real>::quiet_NaN();
-    Real m_b_scalar = std::numeric_limits<Real>::quiet_NaN();
+    Real m_a_scalar =std::numeric_limits<Real>::quiet_NaN();
+    Real m_b_scalar =std::numeric_limits<Real>::quiet_NaN();
     Vector<Vector<MultiFab> > m_a_coeffs;
     Vector<Vector<Array<MultiFab,AMREX_SPACEDIM> > > m_b_coeffs;
 

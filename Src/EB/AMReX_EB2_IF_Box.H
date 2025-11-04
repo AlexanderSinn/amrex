@@ -27,7 +27,7 @@ public:
     [[nodiscard]] AMREX_GPU_HOST_DEVICE inline
     Real operator() (AMREX_D_DECL(Real x, Real y, Real z)) const noexcept
     {
-        Real r =  std::numeric_limits<Real>::lowest();
+        Real r = std::numeric_limits<Real>::lowest();
         AMREX_D_TERM(r = amrex::max(r, x-m_hi.x, -(x-m_lo.x));,
                      r = amrex::max(r, y-m_hi.y, -(y-m_lo.y));,
                      r = amrex::max(r, z-m_hi.z, -(z-m_lo.z)););

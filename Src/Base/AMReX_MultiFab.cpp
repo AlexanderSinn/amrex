@@ -728,7 +728,7 @@ MultiFab::min (int comp, int nghost, bool local) const
 
     BL_ASSERT(nghost >= 0 && n_grow.allGE(nghost));
 
-    Real mn =  std::numeric_limits<Real>::max();
+    Real mn = std::numeric_limits<Real>::max();
 
 #ifdef AMREX_USE_EB
     if ( this->hasEBFabFactory() )
@@ -811,7 +811,7 @@ MultiFab::min (const Box& region, int comp, int nghost, bool local) const
 
     BL_PROFILE("MultiFab::min(region)");
 
-    Real mn =  std::numeric_limits<Real>::max();
+    Real mn = std::numeric_limits<Real>::max();
 
 #ifdef AMREX_USE_GPU
     if (Gpu::inLaunchRegion()) {
@@ -857,7 +857,7 @@ MultiFab::max (int comp, int nghost, bool local) const
 
     BL_PROFILE("MultiFab::max()");
 
-    Real mx =  std::numeric_limits<Real>::lowest();
+    Real mx = std::numeric_limits<Real>::lowest();
 
 #ifdef AMREX_USE_EB
     if ( this->hasEBFabFactory() )
@@ -938,7 +938,7 @@ MultiFab::max (const Box& region, int comp, int nghost, bool local) const
 {
     BL_PROFILE("MultiFab::max(region)");
 
-    Real mx =  std::numeric_limits<Real>::lowest();
+    Real mx = std::numeric_limits<Real>::lowest();
 
 #ifdef AMREX_USE_GPU
     if (Gpu::inLaunchRegion()) {

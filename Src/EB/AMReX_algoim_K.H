@@ -245,7 +245,7 @@ struct BoundingBox
 
 struct Interval
 {
-    Real alpha =  std::numeric_limits<Real>::lowest();
+    Real alpha = std::numeric_limits<Real>::lowest();
 };
 
 // M-dimensional integral of an N-dimensional function restricted to
@@ -272,7 +272,7 @@ struct ImplicitIntegral
     AMREX_GPU_HOST_DEVICE
     bool prune () noexcept
     {
-        static constexpr Real eps =  std::numeric_limits<Real>::epsilon();
+        static constexpr Real eps = std::numeric_limits<Real>::epsilon();
         static constexpr Real almostone = 1.0-10.*eps;
 
         for (int i = 0; i < psiCount; )
@@ -436,7 +436,7 @@ struct ImplicitIntegral
         roots[nroots++] = x_max;
 
         // In rare cases, degenerate segments can be found, filter out with a tolerance
-        static constexpr Real eps =  std::numeric_limits<Real>::epsilon();
+        static constexpr Real eps = std::numeric_limits<Real>::epsilon();
         constexpr Real tol = 50.0*eps;
 
         // Loop over segments of divided interval

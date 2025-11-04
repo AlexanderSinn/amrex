@@ -104,7 +104,7 @@ int main (int argc, char* argv[])
             AMREX_ALWAYS_ASSERT(error < eps);
         }
 
-        mf2.setVal( std::numeric_limits<Real>::max());
+        mf2.setVal(std::numeric_limits<Real>::max());
 
         { // forward and backward
             FFT::R2C<Real,FFT::Direction::both> r2c

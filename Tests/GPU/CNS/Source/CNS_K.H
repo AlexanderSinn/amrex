@@ -20,7 +20,7 @@ cns_estdt (amrex::Box const& bx, amrex::Array4<Real const> const& state,
 
     const auto lo = amrex::lbound(bx);
     const auto hi = amrex::ubound(bx);
-    Real dt =  std::numeric_limits<Real>::max();
+    Real dt = std::numeric_limits<Real>::max();
 
     for         (int k = lo.z; k <= hi.z; ++k) {
         for     (int j = lo.y; j <= hi.y; ++j) {

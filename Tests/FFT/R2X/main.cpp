@@ -96,7 +96,7 @@ int main (int argc, char* argv[])
             }
             amrex::Print() << ")\n";
 
-            mf2.setVal( std::numeric_limits<Real>::max());
+            mf2.setVal(std::numeric_limits<Real>::max());
 
             FFT::R2X fft(geom.Domain(), fft_bc);
             auto scaling_factor = fft.scalingFactor();

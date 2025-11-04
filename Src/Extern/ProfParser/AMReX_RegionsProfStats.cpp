@@ -224,7 +224,7 @@ BLProfStats::TimeRange RegionsProfStats::MakeRegionPlt(FArrayBox &rFab, int nore
   regionBoxes.resize(nRegions);
 
   // need a better way to get the real minmax time
-  Real timeMax(- std::numeric_limits<Real>::max());
+  Real timeMax(-std::numeric_limits<Real>::max());
   for(int idb(0); idb < dataBlocks.size(); ++idb) {
     DataBlock &dBlock = dataBlocks[idb];
     timeMax = std::max(timeMax, dBlock.timeMax);
@@ -669,8 +669,8 @@ void RegionsProfStats::WriteSummary(std::ostream &ios, bool /*bwriteavg*/,
     return;
   }
 
-  Real timeMin( std::numeric_limits<Real>::max());
-  Real timeMax(- std::numeric_limits<Real>::max());
+  Real timeMin(std::numeric_limits<Real>::max());
+  Real timeMax(-std::numeric_limits<Real>::max());
 
   Vector<std::string> fNames(numbersToFName.size());
   for(int i(0); i < fNames.size(); ++i) {

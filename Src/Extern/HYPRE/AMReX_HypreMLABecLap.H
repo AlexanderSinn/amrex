@@ -77,8 +77,8 @@ private:
 
     Vector<IntVect> m_ref_ratio;
 
-    Real m_ascalar =  std::numeric_limits<Real>::max();
-    Real m_bscalar =  std::numeric_limits<Real>::max();
+    Real m_ascalar = std::numeric_limits<Real>::max();
+    Real m_bscalar = std::numeric_limits<Real>::max();
     Array<LinOpBCType,AMREX_SPACEDIM> m_lobc{AMREX_D_DECL(LinOpBCType::bogus,
                                                           LinOpBCType::bogus,
                                                           LinOpBCType::bogus)};

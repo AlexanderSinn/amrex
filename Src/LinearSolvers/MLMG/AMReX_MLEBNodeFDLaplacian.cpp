@@ -404,7 +404,7 @@ MLEBNodeFDLaplacian::Fapply (int amrlev, int mglev, MultiFab& out, const MultiFa
                          Array4<Real const> const& ecy = edgecent[1]->const_array(mfi);,
                          Array4<Real const> const& ecz = edgecent[2]->const_array(mfi));
             auto const& levset = factory->getLevelSet().const_array(mfi);
-            if (phieb ==  std::numeric_limits<Real>::lowest()) {
+            if (phieb == std::numeric_limits<Real>::lowest()) {
                 auto const& phiebarr = m_phi_eb[amrlev].const_array(mfi);
 #if (AMREX_SPACEDIM == 2)
                 if (m_rz) {
@@ -646,7 +646,7 @@ MLEBNodeFDLaplacian::compGrad (int amrlev, const Array<MultiFab*,AMREX_SPACEDIM>
                              = cutfab ? edgecent[1]->const_array(mfi) : Array4<Real const>{};,
                          Array4<Real const> const& ecz
                              = cutfab ? edgecent[2]->const_array(mfi) : Array4<Real const>{};)
-            if (phieb ==  std::numeric_limits<Real>::lowest()) {
+            if (phieb == std::numeric_limits<Real>::lowest()) {
                 auto const& phiebarr = m_phi_eb[amrlev].const_array(mfi);
                 AMREX_LAUNCH_HOST_DEVICE_LAMBDA_DIM(
                     xbox, txbox,
@@ -729,7 +729,7 @@ MLEBNodeFDLaplacian::postSolve (Vector<MultiFab*> const& sol) const
         auto const& levset_ar = levset_mf.const_arrays();
         MultiFab& mf = *sol[amrlev];
         auto const& sol_ar = mf.arrays();
-        if (phieb ==  std::numeric_limits<Real>::lowest()) {
+        if (phieb == std::numeric_limits<Real>::lowest()) {
             auto const& phieb_ar = m_phi_eb[amrlev].const_arrays();
             amrex::ParallelFor(mf, IntVect(1),
             [=] AMREX_GPU_DEVICE (int bi, int i, int j, int k) noexcept

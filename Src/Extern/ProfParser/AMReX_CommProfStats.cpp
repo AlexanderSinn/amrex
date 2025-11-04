@@ -1182,8 +1182,8 @@ void CommProfStats::SendRecvData(const std::string &filenameprefix,
   amrex::ignore_unused(filenameprefix, tlo, thi);
 
   double dstart(amrex::ParallelDescriptor::second());
-  Real timeMin( std::numeric_limits<Real>::max());
-  Real timeMax(- std::numeric_limits<Real>::max());
+  Real timeMin(std::numeric_limits<Real>::max());
+  Real timeMax(-std::numeric_limits<Real>::max());
 
   Vector<Vector<Real> > sendCallTimes(dataNProcs);  // [proc, bnum]
   Vector<Vector<Real> > recvCallTimes(dataNProcs);  // [proc, bnum]

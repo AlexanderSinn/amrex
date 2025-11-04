@@ -24,16 +24,16 @@ void main_main()
     std::string pltfile;
     int ndir_pass = 3;
     bool origin = false;
-    Array<Real,3> location = { std::numeric_limits<Real>::lowest(),
-                               std::numeric_limits<Real>::lowest(),
-                               std::numeric_limits<Real>::lowest()};
+    Array<Real,3> location = {std::numeric_limits<Real>::lowest(),
+                              std::numeric_limits<Real>::lowest(),
+                              std::numeric_limits<Real>::lowest()};
     std::string compname = "density";
     int max_level = -1;
     bool ldef_mx = false;
     bool ldef_mn = false;
     bool do_log = false;
-    Real def_mx =  std::numeric_limits<Real>::lowest();
-    Real def_mn =  std::numeric_limits<Real>::max();
+    Real def_mx = std::numeric_limits<Real>::lowest();
+    Real def_mn = std::numeric_limits<Real>::max();
 
     int farg = 1;
     while (farg <= narg) {
@@ -195,8 +195,8 @@ void main_main()
         rr[ilev] = rr[ilev+1] * pf.refRatio(ilev);
     }
 
-    Real gmx =  std::numeric_limits<Real>::lowest();
-    Real gmn =  std::numeric_limits<Real>::max();
+    Real gmx = std::numeric_limits<Real>::lowest();
+    Real gmn = std::numeric_limits<Real>::max();
 
     for (int ilev = 0; ilev <= max_level; ++ilev) {
         const MultiFab& pltmf = pf.get(ilev, compname);

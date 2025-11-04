@@ -1907,8 +1907,8 @@ void DataServices::RunStats(std::map<int, std::string> &mpiFuncNames,
     int maxMsgSize(std::numeric_limits<int>::min());
     Vector<Long> msgSizes(nMsgSizes, 0);
     Vector<Long> totalFunctionCalls(BLProfiler::NUMBER_OF_CFTS, 0);
-    Real timeMin( std::numeric_limits<Real>::max());
-    Real timeMax(- std::numeric_limits<Real>::max());
+    Real timeMin(std::numeric_limits<Real>::max());
+    Real timeMax(-std::numeric_limits<Real>::max());
     Real timerTime(0.0);
     Long totalNCommStats(0), totalSentData(0);
     int dataNProcs(BLProfStats::GetNProcs());
@@ -2336,7 +2336,7 @@ BLProfStats::TimeRange DataServices::FindCalcTimeRange()
     int  nProcs(ParallelDescriptor::NProcs());
 
     const Vector<std::string> &commHeaderFileNames = CommProfStats::GetHeaderFileNames();
-    BLProfStats::TimeRange calcTimeRange( std::numeric_limits<Real>::max(), - std::numeric_limits<Real>::max());
+    BLProfStats::TimeRange calcTimeRange(std::numeric_limits<Real>::max(), -std::numeric_limits<Real>::max());
 
     // find the calc's min and max times.  the user could set these, too.
     if(myProc < commHeaderFileNames.size()) {

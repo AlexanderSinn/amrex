@@ -270,7 +270,7 @@ compute_surface_integrals (MultiFab& sintgmf, IntVect nghost)
                     } else if (ebflag.isCovered()) {
                         for (int n = 0; n < numSurfIntgs; ++n) { sintg(i,j,k,n) = 0.0; }
                     } else {
-                        constexpr Real almostone = Real(1.) - Real(100.)* std::numeric_limits<Real>::epsilon();
+                        constexpr Real almostone = Real(1.) - Real(100.)*std::numeric_limits<Real>::epsilon();
 
                         if (vf(i,j,k) >= almostone) {
                             for(int n = 0; n < numSurfIntgs; ++n) { sintg(i,j,k,n) = 0.0; }
@@ -335,7 +335,7 @@ compute_surface_integrals (MultiFab& sintgmf, IntVect nghost)
                     } else if (ebflag.isCovered()) {
                         for (int n = 0; n < numSurfIntgs; ++n) { sintg(i,j,k,n) = 0.0; }
                     } else {
-                        constexpr Real almostone = Real(1.) - Real(100.)* std::numeric_limits<Real>::epsilon();
+                        constexpr Real almostone = Real(1.) - Real(100.)*std::numeric_limits<Real>::epsilon();
 
                         if (vf(i,j,k) >= almostone) {
                             for(int n = 0; n < numSurfIntgs; ++n) { sintg(i,j,k,n) = 0.0; }

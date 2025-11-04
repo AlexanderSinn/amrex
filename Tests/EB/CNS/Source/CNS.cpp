@@ -127,7 +127,7 @@ CNS::computeInitialDt (int                    finest_level,
     return;
   }
 
-  Real dt_0 =  std::numeric_limits<Real>::max();
+  Real dt_0 = std::numeric_limits<Real>::max();
   int n_factor = 1;
   for (int i = 0; i <= finest_level; i++)
   {
@@ -203,7 +203,7 @@ CNS::computeNewDt (int                    finest_level,
     //
     // Find the minimum over all levels
     //
-    Real dt_0 =  std::numeric_limits<Real>::max();
+    Real dt_0 = std::numeric_limits<Real>::max();
     int n_factor = 1;
     for (int i = 0; i <= finest_level; i++)
     {
@@ -465,7 +465,7 @@ CNS::estTimeStep ()
 {
     BL_PROFILE("CNS::estTimeStep()");
 
-    Real estdt =  std::numeric_limits<Real>::max();
+    Real estdt = std::numeric_limits<Real>::max();
 
     const Real* dx = geom.CellSize();
     const MultiFab& S = get_new_data(State_Type);
@@ -477,7 +477,7 @@ CNS::estTimeStep ()
 #pragma omp parallel reduction(min:estdt)
 #endif
     {
-        Real dt =  std::numeric_limits<Real>::max();
+        Real dt = std::numeric_limits<Real>::max();
         for (MFIter mfi(S,true); mfi.isValid(); ++mfi)
         {
             const Box& box = mfi.tilebox();

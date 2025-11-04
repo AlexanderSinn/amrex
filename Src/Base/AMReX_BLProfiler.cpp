@@ -107,7 +107,7 @@ Vector<BLProfiler::CallStatsPatch> BLProfiler::callIndexPatch;
 #ifdef BL_TRACE_PROFILING
 int BLProfiler::callStackDepth(-1);
 int BLProfiler::prevCallStackDepth(0);
-Real BLProfiler::CallStats::minCallTime( std::numeric_limits<Real>::max());
+Real BLProfiler::CallStats::minCallTime(std::numeric_limits<Real>::max());
 Real BLProfiler::CallStats::maxCallTime(-1.0);
 #endif
 

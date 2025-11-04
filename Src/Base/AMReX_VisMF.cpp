@@ -516,7 +516,7 @@ VisMF::min (int fabIndex, int nc) const
     BL_ASSERT(0 <= nc && nc < m_hdr.m_ncomp);
 
     if(m_hdr.m_min.empty()) {  // ---- these were not in the header
-        return  std::numeric_limits<Real>::max();
+        return std::numeric_limits<Real>::max();
     }
 
     return m_hdr.m_min[fabIndex][nc];
@@ -528,7 +528,7 @@ VisMF::min (int nc) const
     BL_ASSERT(0 <= nc && nc < m_hdr.m_ncomp);
 
     if(m_hdr.m_famin.empty()) {  // ---- these were not in the header
-        return  std::numeric_limits<Real>::max();
+        return std::numeric_limits<Real>::max();
     }
 
     return m_hdr.m_famin[nc];
@@ -541,7 +541,7 @@ VisMF::max (int fabIndex, int nc) const
     BL_ASSERT(0 <= nc && nc < m_hdr.m_ncomp);
 
     if(m_hdr.m_max.empty()) {  // ---- these were not in the header
-        return  std::numeric_limits<Real>::lowest();
+        return std::numeric_limits<Real>::lowest();
     }
 
     return m_hdr.m_max[fabIndex][nc];
@@ -553,7 +553,7 @@ VisMF::max (int nc) const
     BL_ASSERT(0 <= nc && nc < m_hdr.m_ncomp);
 
     if(m_hdr.m_famax.empty()) {  // ---- these were not in the header
-        return  std::numeric_limits<Real>::lowest();
+        return std::numeric_limits<Real>::lowest();
     }
 
     return m_hdr.m_famax[nc];
@@ -714,8 +714,8 @@ VisMF::Header::Header (const FabArray<FArrayBox>& mf,
       // ---- calculate FabArray min max values only
       m_min.clear();
       m_max.clear();
-      m_famin.resize(m_ncomp,   std::numeric_limits<Real>::max());
-      m_famax.resize(m_ncomp, - std::numeric_limits<Real>::max());
+      m_famin.resize(m_ncomp,  std::numeric_limits<Real>::max());
+      m_famax.resize(m_ncomp, -std::numeric_limits<Real>::max());
 
       for(MFIter mfi(mf); mfi.isValid(); ++mfi) {
         const int idx = mfi.index();
@@ -902,8 +902,8 @@ VisMF::Header::CalculateMinMax (const FabArray<FArrayBox>& mf,
     m_famin.resize(m_ncomp);
     m_famax.resize(m_ncomp);
     for(int comp(0); comp < m_ncomp; ++comp) {
-      m_famin[comp] =   std::numeric_limits<Real>::max();
-      m_famax[comp] = - std::numeric_limits<Real>::max();
+      m_famin[comp] =  std::numeric_limits<Real>::max();
+      m_famax[comp] = -std::numeric_limits<Real>::max();
     }
 
     for(auto & ibox : m_min) {
@@ -2480,8 +2480,8 @@ VisMF::AsyncWriteDoit (const FabArray<FArrayBox>& mf, const std::string& mf_name
             hdr->m_max.resize(n_global_fabs);
             hdr->m_famin.clear();
             hdr->m_famax.clear();
-            hdr->m_famin.resize(ncomp, std::numeric_limits<Real>::max());
-            hdr->m_famax.resize(ncomp, std::numeric_limits<Real>::lowest());
+            hdr->m_famin.resize(ncomp,std::numeric_limits<Real>::max());
+            hdr->m_famax.resize(ncomp,std::numeric_limits<Real>::lowest());
 
             Vector<int64_t> nbytes_on_rank(nprocs,-1L);
             Vector<Vector<int> > gidx(nprocs);

@@ -132,7 +132,7 @@ CNS::computeInitialDt (int                    finest_level,
     return;
   }
 
-  Real dt_0 =  std::numeric_limits<Real>::max();
+  Real dt_0 = std::numeric_limits<Real>::max();
   int n_factor = 1;
   for (int i = 0; i <= finest_level; i++)
   {
@@ -207,7 +207,7 @@ CNS::computeNewDt (int                    finest_level,
     //
     // Find the minimum over all levels
     //
-    Real dt_0 =  std::numeric_limits<Real>::max();
+    Real dt_0 = std::numeric_limits<Real>::max();
     int n_factor = 1;
     for (int i = 0; i <= finest_level; i++)
     {
@@ -521,7 +521,7 @@ CNS::estTimeStep ()
     auto const& fact = dynamic_cast<EBFArrayBoxFactory const&>(S.Factory());
     auto const& flags = fact.getMultiEBCellFlagFab();
 
-    Real estdt =  std::numeric_limits<Real>::max();
+    Real estdt = std::numeric_limits<Real>::max();
 
     // Reduce min operation
     ReduceOps<ReduceOpMin> reduce_op;

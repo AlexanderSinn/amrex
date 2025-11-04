@@ -37,12 +37,12 @@ public:
     template <int M, int N>
     struct BVHNodeT
     {
-        RealBox boundingbox{AMREX_D_DECL( std::numeric_limits<Real>::max(),
-                                          std::numeric_limits<Real>::max(),
-                                          std::numeric_limits<Real>::max()),
-                            AMREX_D_DECL( std::numeric_limits<Real>::lowest(),
-                                          std::numeric_limits<Real>::lowest(),
-                                          std::numeric_limits<Real>::lowest())};
+        RealBox boundingbox{AMREX_D_DECL(std::numeric_limits<Real>::max(),
+                                         std::numeric_limits<Real>::max(),
+                                         std::numeric_limits<Real>::max()),
+                            AMREX_D_DECL(std::numeric_limits<Real>::lowest(),
+                                         std::numeric_limits<Real>::lowest(),
+                                         std::numeric_limits<Real>::lowest())};
         STLtools::Triangle triangles[M];
         XDim3 trinorm[M];
         int children[N];

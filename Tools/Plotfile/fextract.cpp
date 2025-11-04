@@ -20,13 +20,13 @@ void main_main()
     bool center = true;
     int coarse_level = 0;
     int fine_level = -1;  // This will be fixed later
-    Real xcoord =  std::numeric_limits<Real>::lowest();
-    Real ycoord =  std::numeric_limits<Real>::lowest();
-    Real zcoord =  std::numeric_limits<Real>::lowest();
+    Real xcoord = std::numeric_limits<Real>::lowest();
+    Real ycoord = std::numeric_limits<Real>::lowest();
+    Real zcoord = std::numeric_limits<Real>::lowest();
     bool scientific = false;
     bool csv = false;
     int  precision = 17;
-    Real tolerance =  std::numeric_limits<Real>::lowest();
+    Real tolerance = std::numeric_limits<Real>::lowest();
     bool print_info = false;
 
     int farg = 1;
