@@ -1,6 +1,35 @@
 #include <AMReX_PODVector.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_REAL.H>
+#include <AMReX_TinyProfiler.H>
+
+namespace amrex
+{
+    Long mock_real_errno = 0;
+    Long mock_real_crash_errno = 0;
+
+    void print_Mock_err (double v) {
+        ++mock_real_errno;
+        TinyProfiler::PrintCallStack(std::cout);
+        std::cout << mock_real_errno << " value " << v << " is out of bounds" << std::endl;
+        if (mock_real_errno == mock_real_crash_errno) {
+            throw v;
+        }
+    }
+
+    void print_Mock_add_err (double a, double b) {
+        ++mock_real_errno;
+        TinyProfiler::PrintCallStack(std::cout);
+        std::cout << mock_real_errno << " catastrophic cancelation: a= "
+                << a << " b= " << b << " a+b= " << a+b
+                << std::endl;
+        if (mock_real_errno == mock_real_crash_errno) {
+            throw (a+b);
+        }
+    }
+
+}
+
 
 namespace amrex::VectorGrowthStrategy
 {
@@ -34,6 +63,7 @@ namespace amrex::VectorGrowthStrategy
     void Initialize () {
         ParmParse pp("amrex");
         pp.queryAdd("vector_growth_factor", growth_factor);
+        pp.query("mock_real_crash_errno", amrex::mock_real_crash_errno);
 
         detail::ValidateUserInput();
     }

@@ -116,6 +116,14 @@ namespace amrex {
             }
         }
 
+        static constexpr MockReal unchecked_add(const MockReal& a, const MockReal& b) {
+            return MockReal{a.val + b.val};
+        }
+
+        static constexpr MockReal unchecked_sub(const MockReal& a, const MockReal& b) {
+            return MockReal{a.val - b.val};
+        }
+
         static constexpr void check_add(double a, double b) {
             if (std::abs(a + b) * 1.e6 < std::abs(a - b)) {
                 print_Mock_add_err(a, b);
