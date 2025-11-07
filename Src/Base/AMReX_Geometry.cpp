@@ -544,7 +544,7 @@ Geometry::computeRoundoffDomain ()
 
         auto is_outside = [=] (auto x) -> bool
         {
-            auto idx = int(std::floor((x - plo)*dxinv));
+            auto idx = int(std::floor(amrex::Real::unchecked_sub(x, plo)*dxinv));
             return (idx < 0) || (idx >= ncells);
         };
 
