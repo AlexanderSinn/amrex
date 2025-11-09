@@ -372,6 +372,43 @@ BLBackTrace::print_backtrace_info (FILE* f)
 #endif
 }
 
+std::string
+BLBackTrace::get_backtrace_info ()
+{
+#ifdef AMREX_BACKTRACE_SUPPORTED
+
+    const int nbuf = 256;
+    void *bt_buffer[nbuf];
+    int nentries = backtrace(bt_buffer, nbuf);
+
+#ifdef __linux__
+
+    std::stringstream ss;
+    // char **strings = backtrace_symbols(bt_buffer, nentries);
+    // if (strings != nullptr) {
+
+    //     for (int i = 0; i < nentries; ++i)
+    //     {
+    //         ss << i << ": " << strings[i] << "\n\n";
+    //     }
+    //     std::free(strings);
+    // }
+    for (int i = 0; i < nentries; ++i) {
+        char print_buff[32];
+        std::snprintf(print_buff,sizeof(print_buff),"%p",bt_buffer[i]);
+        ss << print_buff << "\n";
+    }
+
+    return ss.str();
+#else
+    return "";
+#endif
+#else
+    return "";
+#endif
+}
+
+
 BLBTer::BLBTer(const std::string& s, const char* file, int line)
 {
     std::ostringstream ss;

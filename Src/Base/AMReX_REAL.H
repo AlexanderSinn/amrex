@@ -117,10 +117,12 @@ namespace amrex {
         }
 
         static constexpr MockReal unchecked_add(const MockReal& a, const MockReal& b) {
+            // check_add(a.val, b.val);
             return MockReal{a.val + b.val};
         }
 
         static constexpr MockReal unchecked_sub(const MockReal& a, const MockReal& b) {
+            // check_add(a.val, -b.val);
             return MockReal{a.val - b.val};
         }
 

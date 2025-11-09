@@ -788,6 +788,10 @@ amrex::Finalize ()
     amrex::Finalize(AMReX::top());
 }
 
+namespace amrex {
+    void finalize_mock_real ();
+}
+
 void
 amrex::Finalize (amrex::AMReX* pamrex)
 {
@@ -811,6 +815,8 @@ amrex::Finalize (amrex::AMReX* pamrex)
 #ifdef BL_LAZY
     Lazy::Finalize();
 #endif
+
+    amrex::finalize_mock_real();
 
     while (!The_Finalize_Function_Stack.empty())
     {
