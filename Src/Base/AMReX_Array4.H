@@ -102,9 +102,8 @@ namespace amrex {
         template <int N, class... idx>
         inline constexpr bool ArrayNDIndexCheck_impl_v = ArrayNDIndexCheck_impl<N, idx...>::value;
 
-        template<std::size_t... idx>
-        constexpr auto make_oob_message_impl (std::index_sequence<idx...>) {
-            constexpr std::size_t N = sizeof...(idx);
+        template<std::size_t N>
+        constexpr auto make_oob_message_impl () {
             constexpr char prefix[] = " (";
             constexpr char middle[] = ") is out of bound (";
             constexpr char suffix[] = ")\n";
@@ -127,7 +126,13 @@ namespace amrex {
                 }
             }
             // %d,%d,...
-            ((buf[pos++] = '%', buf[pos++] = 'd', idx + 1 < N ? buf[pos++] = ',' : 0), ...);
+            for (int i=0; i<N; ++i) {
+                buf[pos++] = '%';
+                buf[pos++] = 'd';
+                if (i + 1 < N) {
+                     buf[pos++] = ',';
+                }
+            }
 
             // ") is out of bound ("
             for (char c : middle) {
@@ -137,8 +142,16 @@ namespace amrex {
             }
 
             // %d:%d,%d:%d,...
-            ((buf[pos++] = '%', buf[pos++] = 'd', buf[pos++] = ':', buf[pos++] = '%', buf[pos++] = 'd',
-                idx + 1 < N ? buf[pos++] = ',' : 0), ...);
+            for (int i=0; i<N; ++i) {
+                buf[pos++] = '%';
+                buf[pos++] = 'd';
+                buf[pos++] = ':';
+                buf[pos++] = '%';
+                buf[pos++] = 'd';
+                if (i + 1 < N) {
+                    buf[pos++] = ',';
+                }
+            }
 
             // suffix
             for (char c : suffix) {
@@ -155,7 +168,7 @@ namespace amrex {
                                 IntVectND<sizeof...(idx)> const& begin,
                                 IntVectND<sizeof...(idx)> const& end)
         {
-            constexpr auto msg = make_oob_message_impl(std::index_sequence<idx...>{});
+            constexpr auto msg = make_oob_message_impl<sizeof...(idx)>();
 
             AMREX_DEVICE_PRINTF(msg.data(),
                 iv[idx]...,
@@ -199,6 +212,15 @@ namespace amrex {
         std::array<Long, N-1> nstride{};
         IntVectND<N> begin{1};
         IntVectND<N> end{0}; // end is hi+1
+        Long m_offset = 0;
+
+        AMREX_GPU_HOST_DEVICE
+        constexpr void calc_offset () {
+            m_offset = - begin[0];
+            constexpr_for<1, N>([&](int d) {
+                m_offset -= begin[d] * nstride[d-1];
+            });
+        }
 
         AMREX_GPU_HOST_DEVICE
         constexpr ArrayND () noexcept : p(nullptr) {}
@@ -206,7 +228,9 @@ namespace amrex {
         template <class U=T, std::enable_if_t<std::is_const_v<U>,int> = 0>
         AMREX_GPU_HOST_DEVICE
         constexpr ArrayND (ArrayND<std::remove_const_t<T>, N> const& rhs) noexcept
-            : p(rhs.p), nstride(rhs.nstride), begin(rhs.begin), end(rhs.end) {}
+            : p(rhs.p), nstride(rhs.nstride), begin(rhs.begin), end(rhs.end) {
+            calc_offset();
+        }
 
         /**
          * \brief Constructor for N=4 using Dim3.
@@ -228,6 +252,7 @@ namespace amrex {
                 current_stride *= len;
                 nstride[d] = current_stride;
             });
+            calc_offset();
         }
 
         /**
@@ -270,6 +295,7 @@ namespace amrex {
                     nstride[d] = current_stride;
                 });
             }
+            calc_offset();
         }
 
         /**
@@ -302,6 +328,7 @@ namespace amrex {
                     nstride[d] = current_stride;
                 });
             }
+            calc_offset();
         }
 
         /**
@@ -337,6 +364,7 @@ namespace amrex {
                     nstride[d] = current_stride;
                 });
             }
+            calc_offset();
         }
 
         /**
@@ -359,6 +387,7 @@ namespace amrex {
         {
             begin[N-1] = 0;
             end[N-1] = rhs.end[N-1] - start_comp;
+            calc_offset();
         }
 
         /**
@@ -382,6 +411,7 @@ namespace amrex {
         {
             begin[N-1] = 0;
             end[N-1] = num_comp;
+            calc_offset();
         }
 
 
@@ -410,9 +440,6 @@ namespace amrex {
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         U& operator() (idx... i) const noexcept {
             constexpr auto nidx = sizeof...(i);
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(IntVectND<nidx>{i...});
-#endif
             return p[get_offset(IntVectND<nidx>{i...})];
         }
 
@@ -425,9 +452,6 @@ namespace amrex {
         template <int M, class U=T, std::enable_if_t<!std::is_void_v<U>,int> = 0>
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         U& operator() (IntVectND<M> const& iv) const noexcept {
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(iv);
-#endif
             return p[get_offset(iv)];
         }
 
@@ -443,9 +467,6 @@ namespace amrex {
         template <int M, class U=T, std::enable_if_t<!std::is_void_v<U>,int> = 0>
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         U& operator() (IntVectND<M> const& iv, int n) const noexcept {
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(iv, n);
-#endif
             return p[get_offset(iv, n)];
         }
 
@@ -483,9 +504,6 @@ namespace amrex {
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         T* ptr (idx... i) const noexcept {
             constexpr auto nidx = sizeof...(i);
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(IntVectND<nidx>{i...});
-#endif
             return p + get_offset(IntVectND<nidx>{i...});
         }
 
@@ -499,9 +517,6 @@ namespace amrex {
         template <int M>
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         T* ptr (IntVectND<M> const& iv) const noexcept {
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(iv);
-#endif
             return p + get_offset(iv);
         }
 
@@ -517,9 +532,6 @@ namespace amrex {
         template <int M>
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         T* ptr (IntVectND<M> const& iv, int n) const noexcept {
-#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
-            index_assert(iv, n);
-#endif
             return p + get_offset(iv, n);
         }
 
@@ -628,26 +640,18 @@ namespace amrex {
             return CellData<T>(this->ptr(i,j,k), nstride[M-2], ncomp);
         }
 
-        // Main get_offset function for N
-        [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-        constexpr Long get_offset (IntVectND<N> const& iv) const noexcept
-        {
-            Long offset = iv[0] - begin[0];
-            constexpr_for<1, N>([&](int d) {
-                offset += (iv[d] - begin[d]) * nstride[d-1];
-            });
-            return offset;
-        }
-
-        // get_offset overload for 1<= M <= N-1
+        // get_offset overload for 1<= M <= N
         // When M < N, the missing indices are set to begin values.
-        template <int M, std::enable_if_t<(1 <= M) && (M <= N-1),int> = 0>
+        template <int M, std::enable_if_t<(1 <= M) && (M <= N),int> = 0>
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         constexpr Long get_offset (IntVectND<M> const& iv) const noexcept
         {
-            Long offset = iv[0] - begin[0];
+#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
+            index_assert(iv);
+#endif
+            Long offset = m_offset + iv[0];
             constexpr_for<1, M>([&](int d) {
-                offset += (iv[d] - begin[d]) * nstride[d-1];
+                offset += iv[d] * nstride[d-1];
             });
             return offset;
         }
@@ -659,14 +663,14 @@ namespace amrex {
         [[nodiscard]] AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
         constexpr Long get_offset (IntVectND<M> const& iv, int n) const noexcept
         {
-            Long offset = iv[0] - begin[0];
+#if defined(AMREX_DEBUG) || defined(AMREX_BOUND_CHECK)
+            index_assert(iv, n);
+#endif
+            Long offset = m_offset + iv[0];
             constexpr_for<1, M>([&](int d) {
-                offset += (iv[d] - begin[d]) * nstride[d-1];
+                offset += iv[d] * nstride[d-1];
             });
-            constexpr_for<M, N-1>([&](int d) {
-                offset += (Long(0) - begin[d]) * nstride[d-1];
-            });
-            offset += (n - begin[N-1]) * nstride[N-2];
+            offset += n * nstride[N-2];
             return offset;
         }
 
