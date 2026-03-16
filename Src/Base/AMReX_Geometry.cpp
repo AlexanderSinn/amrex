@@ -525,7 +525,11 @@ Geometry::computeRoundoffDomain ()
         offset[k] = prob_domain.lo(k);
         dx[k] = prob_domain.length(k)/(Real(domain.length(k)));
         inv_dx[k] = 1.0_rt/dx[k];
+        roundoff_lo[k] = prob_domain.lo(k);
+        roundoff_hi[k] = prob_domain.hi(k);
     }
+
+    return;
 
     constexpr int maxiters = 200;
 
